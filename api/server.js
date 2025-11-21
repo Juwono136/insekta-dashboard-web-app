@@ -55,12 +55,12 @@ app.get("/", (req, res) => {
   res.send("API Insekta Running 🚀");
 });
 
-export default app;
-
 // 5. Jalankan Server
 
-if (!process.env.VERCEL) {
+if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
-    console.log(`Server LOKAL berjalan di http://localhost:${PORT}`);
+    console.log(`Server LOKAL berjalan di Port: ${PORT}`);
   });
 }
+
+export default app;
