@@ -23,6 +23,7 @@ const __dirname = path.dirname(__filename);
 
 // 1. Inisialisasi App
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 // 2. Connect Database
 connectDB();
@@ -51,11 +52,15 @@ app.use(errorHandler);
 
 // 4. Route Testing
 app.get("/", (req, res) => {
-  res.send("API Insekta Running (ES Modules) 🚀");
+  res.send("API Insekta Running 🚀");
 });
 
+export default app;
+
 // 5. Jalankan Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server berjalan di port ${PORT}`);
-});
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server LOKAL berjalan di http://localhost:${PORT}`);
+  });
+}
