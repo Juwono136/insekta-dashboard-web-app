@@ -5,128 +5,87 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
-// Setup path untuk save file
+// Setup path untuk save file (ES Module fix)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// @desc    Create New Feature (Wajib: Title, URL, Icon)
+// @desc    Create New Feature
 // @route   POST /api/features
 export const createFeature = async (req, res) => {
   try {
-    const { title, url, assignedTo, parentId } = req.body;
+    const { title, assignedTo, defaultType, defaultUrl, defaultSubMenus } = req.body;
 
-    // 1. Validasi Input Teks
-    if (!title || !url) {
-      return res.status(400).json({ message: "Judul dan URL Google Drive wajib diisi" });
+    // 1. Validasi Input Global
+    if (!title) {
+      return res.status(400).json({ message: "Judul menu wajib diisi" });
     }
 
-    // 2. Validasi File Icon (Wajib Ada)
+    // 2. Validasi File Icon (Wajib Ada untuk Create)
     if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Icon wajib diupload dalam format file gambar (PNG, JPG, atau WEBP)" });
+      return res.status(400).json({ message: "Icon wajib diupload (PNG/JPG/WEBP)" });
     }
 
-    // 3. Proses Validasi ID User (assignedTo) - parsing dari JSON string jika perlu
-    let assignedUsers = [];
+    // 3. Parsing Data JSON (karena dikirim via FormData)
+    let assignedParsed = [];
     if (assignedTo) {
-      // Jika dikirim via Form-Data, array kadang terbaca sebagai string, jadi perlu diparse
-      assignedUsers = Array.isArray(assignedTo) ? assignedTo : JSON.parse(assignedTo);
+      try {
+        assignedParsed = JSON.parse(assignedTo);
+      } catch (e) {
+        return res.status(400).json({ message: "Format data akses client invalid" });
+      }
+    } else {
+      return res.status(400).json({ message: "Harus memilih minimal satu client" });
+    }
 
-      const isValidIds = assignedUsers.every((id) => mongoose.Types.ObjectId.isValid(id));
-      if (!isValidIds) {
-        return res.status(400).json({ message: "Terdapat ID User yang tidak valid" });
+    let defaultSubMenusParsed = [];
+    if (defaultSubMenus) {
+      try {
+        defaultSubMenusParsed = JSON.parse(defaultSubMenus);
+      } catch (e) {
+        defaultSubMenusParsed = [];
       }
     }
 
-    // 4. IMAGE PROCESSING (Sharp)
-    // Nama file unik: icon-timestamp-random.png
+    // 4. IMAGE PROCESSING (Local Storage)
     const filename = `icon-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
-    const outputPath = path.join(__dirname, "../public/uploads/icons", filename);
+    const uploadDir = path.join(__dirname, "../public/uploads/icons");
 
     // Pastikan folder ada
-    if (!fs.existsSync(path.join(__dirname, "../public/uploads/icons"))) {
-      fs.mkdirSync(path.join(__dirname, "../public/uploads/icons"), { recursive: true });
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    // Resize gambar ke 200x200 pixel (Ukuran aman untuk icon dashboard)
+    const outputPath = path.join(uploadDir, filename);
+
+    // Resize & Save
     await sharp(req.file.buffer)
       .resize(200, 200, {
-        fit: "contain", // Agar gambar tidak gepeng/terpotong, area kosong jadi transparan
+        fit: "contain",
         background: { r: 0, g: 0, b: 0, alpha: 0 },
       })
       .toFormat("png")
       .toFile(outputPath);
 
     // 5. Simpan ke Database
-    // Kita simpan URL relatifnya saja
     const feature = await Feature.create({
       title,
-      url,
-      icon: `/uploads/icons/${filename}`, // Path yang disimpan di DB
-      assignedTo: assignedUsers,
-      parentId: parentId || null,
+      icon: `/uploads/icons/${filename}`, // Path lokal
+
+      // Simpan Default Config
+      defaultType: defaultType || "single",
+      defaultUrl: defaultType === "single" ? defaultUrl : "",
+      defaultSubMenus: defaultType === "folder" ? defaultSubMenusParsed : [],
+
+      // Simpan User Specific Config
+      assignedTo: assignedParsed,
+
+      createdBy: req.user._id,
     });
 
     res.status(201).json(feature);
   } catch (error) {
-    console.error(error);
+    console.error("Error create feature:", error);
     res.status(500).json({ message: `Server Error: ${error.message}` });
-  }
-};
-
-// @desc    Get All Features (With Search & Pagination)
-// @route   GET /api/features/admin
-// @access  Private/Admin
-export const getAllFeatures = async (req, res) => {
-  try {
-    // 1. Ambil Query Params
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10; // Default 10 item per halaman
-    const search = req.query.search || "";
-
-    // 2. Build Query (Cari berdasarkan Title)
-    const query = {
-      title: { $regex: search, $options: "i" },
-    };
-
-    // 3. Hitung Total
-    const totalFeatures = await Feature.countDocuments(query);
-
-    // 4. Ambil Data
-    const features = await Feature.find(query)
-      .populate("assignedTo", "name email avatar") // Ambil data user detail
-      .sort({ createdAt: -1 }) // Terbaru di atas
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    // 5. Response Format Standar
-    res.status(200).json({
-      data: features,
-      pagination: {
-        totalData: totalFeatures,
-        totalPages: Math.ceil(totalFeatures / limit),
-        currentPage: page,
-        limit,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// @desc    Get My Features (Client)
-// @route   GET /api/features/my-features
-// @access  Private/Client
-export const getMyFeatures = async (req, res) => {
-  try {
-    const features = await Feature.find({
-      assignedTo: { $in: [req.user._id] },
-    });
-
-    res.status(200).json(features);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
 };
 
@@ -135,33 +94,59 @@ export const getMyFeatures = async (req, res) => {
 export const updateFeature = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
+    const { title, assignedTo, defaultType, defaultUrl, defaultSubMenus } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "ID Invalid" });
+    }
 
     const feature = await Feature.findById(id);
     if (!feature) return res.status(404).json({ message: "Fitur tidak ditemukan" });
 
-    // Update field teks
-    feature.title = req.body.title || feature.title;
-    feature.url = req.body.url || feature.url;
+    // 1. Update Judul
+    if (title) feature.title = title;
 
-    if (req.body.assignedTo) {
-      feature.assignedTo = Array.isArray(req.body.assignedTo)
-        ? req.body.assignedTo
-        : JSON.parse(req.body.assignedTo);
+    // 2. Update Default Config
+    if (defaultType) feature.defaultType = defaultType;
+
+    if (feature.defaultType === "single") {
+      if (defaultUrl !== undefined) feature.defaultUrl = defaultUrl;
+      feature.defaultSubMenus = [];
+    } else {
+      feature.defaultUrl = "";
+      if (defaultSubMenus) {
+        try {
+          feature.defaultSubMenus = JSON.parse(defaultSubMenus);
+        } catch (e) {
+          feature.defaultSubMenus = [];
+        }
+      }
     }
 
-    // Update Icon (Jika ada file baru diupload)
+    // 3. Update Konfigurasi User
+    if (assignedTo) {
+      try {
+        feature.assignedTo = JSON.parse(assignedTo);
+      } catch (e) {
+        return res.status(400).json({ message: "Format data konfigurasi invalid" });
+      }
+    }
+
+    // 4. Update Icon (Jika ada file baru diupload)
     if (req.file) {
-      // 1. Hapus icon lama agar tidak menuhin server
+      // Hapus icon lama fisik
       if (feature.icon) {
         const oldPath = path.join(__dirname, "../public", feature.icon);
         if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
+          try {
+            fs.unlinkSync(oldPath);
+          } catch (err) {
+            console.error("Gagal hapus icon lama:", err);
+          }
         }
       }
 
-      // 2. Proses icon baru
+      // Simpan icon baru
       const filename = `icon-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
       const outputPath = path.join(__dirname, "../public/uploads/icons", filename);
 
@@ -176,6 +161,92 @@ export const updateFeature = async (req, res) => {
     const updatedFeature = await feature.save();
     res.status(200).json(updatedFeature);
   } catch (error) {
+    console.error("Error update feature:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get All Features (Admin - Support Filter & Pagination)
+// @route   GET /api/features/admin
+export const getAllFeatures = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || "";
+    const company = req.query.company || "";
+
+    const query = {
+      title: { $regex: search, $options: "i" },
+    };
+
+    // Filter by Company (Cari di dalam array assignedTo)
+    if (company) {
+      query["assignedTo.companyName"] = company;
+    }
+
+    const totalFeatures = await Feature.countDocuments(query);
+    const features = await Feature.find(query)
+      // [PENTING] Populate user detail di dalam array assignedTo agar namanya muncul
+      .populate("assignedTo.user", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      data: features,
+      pagination: {
+        totalData: totalFeatures,
+        totalPages: Math.ceil(totalFeatures / limit),
+        currentPage: page,
+        limit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get My Features (Client Dashboard Logic)
+// @route   GET /api/features/my-features
+export const getMyFeatures = async (req, res) => {
+  try {
+    // 1. Cari semua fitur dimana User ID ini ada di dalam array assignedTo
+    const features = await Feature.find({
+      "assignedTo.user": req.user._id,
+    });
+
+    // 2. Map/Transform data (Pilih antara Default vs Custom)
+    const myFeatures = features
+      .map((f) => {
+        // Cari config spesifik milik user yang sedang login
+        const myConfig = f.assignedTo.find(
+          (item) => item.user.toString() === req.user._id.toString()
+        );
+
+        if (!myConfig) return null;
+
+        // LOGIKA FALLBACK:
+        // Jika isCustom = true, gunakan config user.
+        // Jika isCustom = false, gunakan config default (global).
+
+        const finalType = myConfig.isCustom ? myConfig.type : f.defaultType;
+        const finalUrl = myConfig.isCustom ? myConfig.url : f.defaultUrl;
+        const finalSubMenus = myConfig.isCustom ? myConfig.subMenus : f.defaultSubMenus;
+
+        return {
+          _id: f._id,
+          title: f.title,
+          icon: f.icon,
+          // Return hasil final yang sudah dipilih
+          type: finalType,
+          url: finalUrl,
+          subMenus: finalSubMenus,
+        };
+      })
+      .filter(Boolean); // Hapus null jika ada
+
+    res.status(200).json(myFeatures);
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -188,11 +259,15 @@ export const deleteFeature = async (req, res) => {
     const feature = await Feature.findById(id);
     if (!feature) return res.status(404).json({ message: "Fitur tidak ditemukan" });
 
-    // Hapus file icon fisik di server
+    // Hapus file icon fisik
     if (feature.icon) {
       const filePath = path.join(__dirname, "../public", feature.icon);
       if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+        try {
+          fs.unlinkSync(filePath);
+        } catch (err) {
+          console.error("Gagal hapus file icon:", err);
+        }
       }
     }
 

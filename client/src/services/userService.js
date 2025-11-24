@@ -7,6 +7,10 @@ const userService = {
     const response = await api.get("/users", { params });
     return response.data;
   },
+  getCompanies: async () => {
+    const response = await api.get("/users/companies");
+    return response.data;
+  },
   createUser: async (userData) => {
     const response = await api.post("/users", userData);
     return response.data;

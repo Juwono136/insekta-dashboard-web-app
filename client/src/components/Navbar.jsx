@@ -59,7 +59,7 @@ const Navbar = ({ toggleSidebar, role }) => {
 
   return (
     <>
-      <div className="navbar bg-white h-16 px-8 sticky top-0 z-20 border-b border-gray-200 shadow-sm flex items-center justify-between transition-all">
+      <div className="navbar bg-white h-16 px-4 sticky top-0 z-20 border-b border-gray-200 shadow-sm flex items-center justify-between transition-all">
         {/* KIRI: Hamburger & Logo */}
         <div className="flex items-center gap-4">
           {role === "admin" && (

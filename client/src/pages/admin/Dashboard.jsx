@@ -221,7 +221,7 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in pb-10">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -232,7 +232,7 @@ const AdminDashboard = () => {
         <div className="flex gap-3">
           {/* FILTER DATE (IMPROVED UI) */}
           <div className="relative">
-            <div className="absolute z-30 inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <div className="absolute z-10 inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <FiCalendar className="text-gray-500" />
             </div>
             <select
@@ -402,7 +402,7 @@ const AdminDashboard = () => {
         <div className="card-body p-0">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center">
             <h3 className="font-bold text-gray-700 text-lg">Aktivitas Menu Terbaru</h3>
-            <Link to="/admin/features" className="text-sm btn btn-ghost bg-blue-100 text-blue-600">
+            <Link to="/admin/features" className="text-xs btn btn-ghost bg-blue-100 text-blue-600">
               Lihat Semua
             </Link>
           </div>
@@ -446,7 +446,10 @@ const AdminDashboard = () => {
                           {feat.assignedTo.slice(0, 3).map((u) => (
                             <div key={u._id} className="avatar border-2 border-blue-900 w-6 h-6">
                               <div className="bg-gray-200 text-gray-600 text-[10px]">
-                                <img src={getImageUrl(u.avatar) || u.avatar} alt="image-profile" />
+                                <img
+                                  src={getImageUrl(u.user.avatar) || u.user.avatar}
+                                  alt="image-profile"
+                                />
                               </div>
                             </div>
                           ))}

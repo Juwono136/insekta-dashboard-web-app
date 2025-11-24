@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { setCredentials } from "../redux/slices/authSlice";
 import api from "../services/api";
 import toast from "react-hot-toast";
@@ -15,13 +15,13 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import PageLoader from "../components/PageLoader";
-import { getImageUrl } from "../utils/imageUrl"; // <-- Import Helper URL
+import { getImageUrl } from "../utils/imageUrl";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 const UserProfile = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   const isFirstLogin = userInfo?.isFirstLogin;
 
@@ -131,6 +131,8 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-10">
+      <Breadcrumbs />
+
       {isFirstLogin && (
         <div className="alert alert-warning shadow-lg mb-8 animate-pulse border-l-4 border-orange-600">
           <FiAlertCircle className="text-2xl" />
@@ -174,14 +176,19 @@ const UserProfile = () => {
               </label>
             </div>
             <h2 className="text-2xl font-bold mt-4 text-gray-800">{userInfo?.name}</h2>
-            <p className="text-gray-500 text-sm uppercase tracking-widest font-semibold">
-              {userInfo?.role}
+            <p className="text-gray-500 text-sm tracking-widest font-semibold">
+              {userInfo?.companyName}
             </p>
+            <div
+              className={`badge badge-outline capitalize mt-2 font-semibold ${
+                userInfo?.role === "client" ? "badge-warning" : "badge-success"
+              }`}
+            >
+              {userInfo?.role}
+            </div>
           </div>
 
           <form onSubmit={handlePreSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            {/* ... (Kode Input Nama & Email SAMA SEPERTI SEBELUMNYA, Copy Paste Saja Bagian Form Input) ... */}
-
             <div className="form-control">
               <label className="label font-semibold text-gray-600">Nama Lengkap</label>
               <div className="relative group">

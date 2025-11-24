@@ -17,6 +17,7 @@ import ClientDashboard from "./pages/client/Dashboard";
 import AdminDashboard from "./pages/admin/Dashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import FeatureManagement from "./pages/admin/FeatureManagement";
+import FolderView from "./pages/client/FolderView";
 
 // Layout Wrapper Client
 const ClientLayout = ({ children }) => (
@@ -60,6 +61,16 @@ function App() {
                 </ClientLayout>
               }
             />
+
+            <Route
+              path="/dashboard/folder/:id"
+              element={
+                <ClientLayout>
+                  <FolderView />
+                </ClientLayout>
+              }
+            />
+
             <Route
               path="/profile"
               element={

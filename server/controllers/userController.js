@@ -59,6 +59,20 @@ export const getUsers = async (req, res) => {
   }
 };
 
+// Ambil daftar nama perusahaan unik
+// @route GET /api/users/companies
+export const getCompanies = async (req, res) => {
+  try {
+    // Ambil semua value 'companyName' yang unik, khusus role client, dan tidak kosong
+    const companies = await User.find({ role: "client" }).distinct("companyName");
+    // Filter agar tidak ada yang null/string kosong
+    const cleanList = companies.filter((c) => c && c.trim() !== "").sort();
+    res.json(cleanList);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Create new user by Admin
 // @route   POST /api/users
 export const createUserByAdmin = async (req, res) => {
@@ -68,6 +82,12 @@ export const createUserByAdmin = async (req, res) => {
     if (!name || !email) {
       res.status(400);
       throw new Error("Nama dan Email wajib diisi");
+    }
+
+    // Jika role client, companyName WAJIB
+    if (role === "client" && !companyName) {
+      res.status(400);
+      throw new Error("Nama Perusahaan wajib diisi untuk Client");
     }
 
     const userExists = await User.findOne({ email });
@@ -114,6 +134,7 @@ export const createUserByAdmin = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        companyName: user.companyName,
         isFirstLogin: user.isFirstLogin,
         message: "User dibuat & email notifikasi dikirim.",
       });
