@@ -67,10 +67,10 @@ const FeatureCard = ({ feature, onEdit, onDelete }) => {
               />
             </div>
             <div>
-              <h3 className="font-bold text-gray-800 text-lg line-clamp-1" title={feature.title}>
+              <h3 className="font-bold text-gray-800 text-base line-clamp-1" title={feature.title}>
                 {feature.title}
               </h3>
-              <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+              <span className="text-[10px] text-gray-400 font-medium capitalize tracking-wider">
                 Total Akses: {feature.assignedTo?.length || 0} Client
               </span>
             </div>
@@ -79,14 +79,14 @@ const FeatureCard = ({ feature, onEdit, onDelete }) => {
           <div className="flex gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={() => onEdit(feature)}
-              className="btn btn-square btn-xs btn-ghost text-blue-600 hover:bg-blue-50"
+              className="btn btn-square btn-sm btn-ghost text-blue-600 hover:bg-blue-50"
               title="Edit"
             >
               <FiEdit3 />
             </button>
             <button
               onClick={() => onDelete(feature)}
-              className="btn btn-square btn-xs btn-ghost text-red-500 hover:bg-red-50"
+              className="btn btn-square btn-sm btn-ghost text-red-500 hover:bg-red-50"
               title="Hapus"
             >
               <FiTrash2 />

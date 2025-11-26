@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import featureService from "../../services/featureService";
 import PageLoader from "../../components/PageLoader";
 import { FiLayers } from "react-icons/fi";
-import { isGoogleDriveUrl } from "../../utils/urlHelper";
+import { isPreviewable } from "../../utils/urlHelper";
 
 import DashboardHeader from "./DashboardHeader";
 import FeatureCard from "./FeatureCard";
 import FilePreviewModal from "./FilePreviewModal";
+import PromotionSlider from "../../components/PromotionSlider";
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -34,16 +35,14 @@ const ClientDashboard = () => {
   // --- LOGIC KLIK MENU UTAMA ---
   const handleMenuClick = (feature) => {
     if (feature.type === "folder") {
-      // 1. Jika FOLDER -> Pindah Halaman
-      // Kita kirim data feature via state agar tidak perlu fetch ulang
       navigate(`/dashboard/folder/${feature._id}`, { state: { feature } });
     } else {
-      // 2. Jika SINGLE LINK
-      if (isGoogleDriveUrl(feature.url)) {
-        // Scenario A: GDrive -> Buka Modal Preview
+      // [PERBAIKAN DISINI]
+      // Hanya buka modal jika link adalah FILE yang bisa dipreview (isPreviewable)
+      if (isPreviewable(feature.url)) {
         setPreviewData({ title: feature.title, url: feature.url });
       } else {
-        // Scenario B: Link Biasa -> Buka Tab Baru
+        // Jika Folder Google atau Link Website Biasa -> Buka Tab Baru
         window.open(feature.url, "_blank");
       }
     }
@@ -53,7 +52,7 @@ const ClientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20 animate-fade-in">
-      <div className="max-w-6xl mx-auto px-4 pt-6">
+      <div className="max-w-6xl mx-auto px-4 pt-0">
         <DashboardHeader />
 
         <div className="flex items-center gap-2 mb-6">
@@ -85,6 +84,8 @@ const ClientDashboard = () => {
             ))}
           </div>
         )}
+
+        <PromotionSlider />
       </div>
 
       {/* MODAL PREVIEW FILE */}

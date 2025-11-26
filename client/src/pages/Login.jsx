@@ -6,7 +6,7 @@ import authService from "../services/authService";
 import toast from "react-hot-toast";
 import { FiLock, FiMail, FiEye, FiEyeOff } from "react-icons/fi";
 import PageLoader from "../components/PageLoader";
-import LogoInsekta from "../assets/logo-insekta.webp";
+import LogoInsektaWhite from "../assets/logo-insekta-white.png";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -62,10 +62,10 @@ const Login = () => {
 
         <div className="relative z-10 text-center text-white p-12">
           <div className="inline-block px-6 py-5 bg-white/20 rounded-2xl backdrop-blur-md mb-8 shadow-2xl border border-white/10">
-            <img src={LogoInsekta} alt="logo-insekta" className="h-21" />
+            <img src={LogoInsektaWhite} alt="logo-insekta" className="h-21" />
           </div>
           <p className="text-xl max-w-md mx-auto opacity-90 leading-relaxed font-light">
-            Sistem Monitoring & Pengendalian Hama Terpadu Berbasis Digital.
+            Dashboard Pengendalian Hama PT Insekta Fokustama
           </p>
         </div>
       </div>
@@ -75,7 +75,7 @@ const Login = () => {
         {/* Branding Mobile (Hanya muncul di HP) */}
         <div className="text-center lg:hidden text-white z-10">
           <div className="inline-block px-6 py-4 bg-white/20 rounded-2xl backdrop-blur-md border shadow-2xl border-white/10">
-            <img src={LogoInsekta} alt="logo-insekta" className="h-12" />
+            <img src={LogoInsektaWhite} alt="logo-insekta" className="h-12" />
           </div>
         </div>
 

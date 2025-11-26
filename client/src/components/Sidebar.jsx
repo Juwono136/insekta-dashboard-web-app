@@ -1,11 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
-import { FiGrid, FiUsers, FiUser, FiLayers, FiPieChart, FiX } from "react-icons/fi";
+import { FiGrid, FiUsers, FiUser, FiLayers, FiPieChart } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
+import { FaUsers } from "react-icons/fa6";
+import { FaRegFileImage } from "react-icons/fa";
 import clsx from "clsx";
-import LogoInsekta from "../assets/logo-insekta.webp";
+import LogoInsektaWhite from "../assets/logo-insekta-white.png";
+import { useSelector } from "react-redux";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
+  const { userInfo } = useSelector((state) => state.auth);
 
   // Fungsi helper: Tutup sidebar hanya jika di mode mobile
   const handleMobileMenuClick = () => {
@@ -18,7 +22,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const menus = [
     { title: "Dashboard", path: "/admin/dashboard", icon: <FiGrid /> },
     { title: "User Management", path: "/admin/users", icon: <FiUsers /> },
+    { title: "Team Management", path: "/admin/teams", icon: <FaUsers /> },
     { title: "Feature Management", path: "/admin/features", icon: <FiLayers /> },
+    { title: "Edit Banner", path: "/admin/banners", icon: <FaRegFileImage /> },
     { title: "Edit Profile", path: "/admin/profile", icon: <FiUser /> },
     { title: "Data Grafik", path: "/admin/charts", icon: <FiPieChart /> },
   ];
@@ -50,8 +56,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             href="/admin/dashboard"
             className="flex items-center gap-2 md:gap-4 font-bold text-xl tracking-wider"
           >
-            <img src={LogoInsekta} alt="logo-insekta" className="h-8 md:h-10" />
-            <span className="text-xs bg-green-600 px-2 py-1 rounded text-white">Admin</span>
+            <img src={LogoInsektaWhite} alt="logo-insekta" className="h-8 md:h-10" />
+            <span className="text-xs bg-green-600 capitalize px-2 py-1 rounded text-white">
+              {userInfo?.role}
+            </span>
           </a>
           {/* Tombol Close (Mobile Only) */}
           <button

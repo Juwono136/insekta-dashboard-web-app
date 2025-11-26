@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiHome } from "react-icons/fi";
 import { getImageUrl } from "../../utils/imageUrl";
-import { isGoogleDriveUrl } from "../../utils/urlHelper";
+import { isPreviewable } from "../../utils/urlHelper";
 import FeatureCard from "./FeatureCard";
 import FilePreviewModal from "./FilePreviewModal";
 import DashboardHeader from "./DashboardHeader";
@@ -25,14 +25,12 @@ const FolderView = () => {
 
   // Handler Klik Item Submenu
   const handleSubItemClick = (subItem) => {
-    // Gunakan logika icon dari parent FeatureCard, kita mock structurenya agar sesuai
-    // Tapi karena subItem struktur datanya beda (title, url), kita sesuaikan logicnya
-
-    if (isGoogleDriveUrl(subItem.url)) {
-      // Scenario A: GDrive -> Buka Modal
+    // [PERBAIKAN DISINI]
+    // Cek apakah URL bisa dipreview (File Google)
+    if (isPreviewable(subItem.url)) {
       setPreviewData({ title: subItem.title, url: subItem.url });
     } else {
-      // Scenario B: Link Biasa -> Tab Baru
+      // Jika Folder Google / Link Luar -> Tab Baru
       window.open(subItem.url, "_blank");
     }
   };

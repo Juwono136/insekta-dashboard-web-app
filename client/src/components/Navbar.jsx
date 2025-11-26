@@ -2,9 +2,10 @@ import { useState, useEffect } from "react"; // Tambah useEffect
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import authService from "../services/authService";
-import { useNavigate, Link } from "react-router-dom";
-import { FiLogOut, FiUser, FiGrid, FiCalendar, FiAlertCircle } from "react-icons/fi";
+import { useNavigate, Link, NavLink } from "react-router-dom";
+import { FiLogOut, FiUser, FiGrid, FiCalendar, FiAlertCircle, FiTrendingUp } from "react-icons/fi";
 import { HiMenuAlt2 } from "react-icons/hi";
+import { FaUsers } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import LogoInsekta from "../assets/logo-insekta.webp";
 import { getImageUrl } from "../utils/imageUrl";
@@ -59,7 +60,7 @@ const Navbar = ({ toggleSidebar, role }) => {
 
   return (
     <>
-      <div className="navbar bg-white h-16 px-4 sticky top-0 z-20 border-b border-gray-200 shadow-sm flex items-center justify-between transition-all">
+      <div className="navbar bg-white h-16 px-4 md:px-6 sticky top-0 z-20 border-b border-gray-200 shadow-sm flex items-center justify-between transition-all">
         {/* KIRI: Hamburger & Logo */}
         <div className="flex items-center gap-4">
           {role === "admin" && (
@@ -79,12 +80,44 @@ const Navbar = ({ toggleSidebar, role }) => {
         </div>
 
         {/* TENGAH: Informasi Tambahan (Tanggal & Notif) - Hidden di Mobile */}
-        <div className="hidden md:flex flex-1 justify-end px-8 items-center gap-6 border-r border-gray-200 mr-6">
+        <div className="hidden md:flex flex-1 justify-end px-8 items-center gap-4 border-r border-gray-200 mr-6">
           {/* Tanggal */}
           <div className="flex items-center gap-2 text-gray-500 text-sm font-medium bg-gray-50 px-3 py-1.5 rounded-full">
             <FiCalendar className="text-blue-800" />
             <span>{formatDate(currentDate)}</span>
           </div>
+
+          {role === "client" && !userInfo.isFirstLogin && (
+            <NavLink
+              to="/trend-hama"
+              className={({ isActive }) =>
+                `hidden md:flex text-sm items-center gap-2 p-2 rounded-md transition-all duration-300 ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                    : "text-gray-500 hover:bg-blue-50 hover:text-blue-600"
+                }`
+              }
+            >
+              <FiTrendingUp size={15} />
+              <span className="font-medium">Trend Hama</span>
+            </NavLink>
+          )}
+
+          {role === "client" && !userInfo.isFirstLogin && (
+            <NavLink
+              to="/tim-insekta"
+              className={({ isActive }) =>
+                `hidden md:flex text-sm items-center gap-2 p-2 rounded-md transition-all duration-300 ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                    : "text-gray-500 hover:bg-blue-50 hover:text-blue-600"
+                }`
+              }
+            >
+              <FaUsers size={15} />
+              <span className="font-medium">Tim Insekta</span>
+            </NavLink>
+          )}
 
           {/* Notifikasi Dummy */}
         </div>
@@ -124,6 +157,30 @@ const Navbar = ({ toggleSidebar, role }) => {
               <li className="menu-title px-4 py-2 text-gray-400 text-xs font-semibold uppercase tracking-wider border-b border-gray-50 mb-2">
                 Akun Saya
               </li>
+
+              {role === "client" && !userInfo.isFirstLogin && (
+                <li className="md:hidden">
+                  <Link
+                    to="/trend-hama"
+                    onClick={closeDropdown}
+                    className="py-3 px-4 text-gray-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg font-medium"
+                  >
+                    <FiTrendingUp className="w-4 h-4" /> Trend Hama
+                  </Link>
+                </li>
+              )}
+
+              {role === "client" && !userInfo.isFirstLogin && (
+                <li className="md:hidden">
+                  <Link
+                    to="/tim-insekta"
+                    onClick={closeDropdown}
+                    className="py-3 px-4 text-gray-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg font-medium"
+                  >
+                    <FaUsers className="w-4 h-4" /> Tim Insekta
+                  </Link>
+                </li>
+              )}
 
               <li>
                 <Link

@@ -6,6 +6,10 @@ const chartService = {
     const response = await api.get("/charts", { params });
     return response.data;
   },
+  updateChart: async (id, data) => {
+    const response = await api.put(`/charts/${id}`, data);
+    return response.data;
+  },
   // Preview Data dari GSheet
   previewData: async (url) => {
     const response = await api.post("/charts/preview", { url });

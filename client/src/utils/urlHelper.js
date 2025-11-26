@@ -3,10 +3,22 @@ export const isGoogleDriveUrl = (url) => {
   return url.includes("drive.google.com") || url.includes("docs.google.com");
 };
 
+export const isDriveFolder = (url) => {
+  if (!url) return false;
+  return url.includes("/drive/folders/") || url.includes("/folderview");
+};
+
+// [UPDATE] Helper untuk memastikan hanya FILE yang dianggap bisa dipreview
+export const isPreviewable = (url) => {
+  return isGoogleDriveUrl(url) && !isDriveFolder(url);
+};
+
 export const getEmbedUrl = (url) => {
   if (!url) return "";
 
-  // Logika replace /view atau /edit menjadi /preview
+  // Jika folder, kembalikan URL asli (karena tidak akan di-embed)
+  if (isDriveFolder(url)) return url;
+
   let embedUrl = url;
 
   if (url.includes("/view")) {
@@ -14,8 +26,6 @@ export const getEmbedUrl = (url) => {
   } else if (url.includes("/edit")) {
     embedUrl = url.replace("/edit", "/preview");
   } else if (!url.includes("/preview")) {
-    // Jika URL drive biasa tapi belum ada akhiran action
-    // Cek apakah diakhiri slash
     if (url.endsWith("/")) {
       embedUrl = `${url}preview`;
     } else {

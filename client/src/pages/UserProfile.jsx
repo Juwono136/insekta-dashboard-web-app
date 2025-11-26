@@ -190,7 +190,9 @@ const UserProfile = () => {
 
           <form onSubmit={handlePreSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="form-control">
-              <label className="label font-semibold text-gray-600">Nama Lengkap</label>
+              <label className="label font-semibold text-gray-600">
+                Nama Lengkap <span className="text-red-500">*</span>
+              </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                   <FiUser className="text-gray-400 group-focus-within:text-blue-800" />
@@ -206,7 +208,9 @@ const UserProfile = () => {
             </div>
 
             <div className="form-control">
-              <label className="label font-semibold text-gray-600">Email</label>
+              <label className="label font-semibold text-gray-600">
+                Email <span className="text-red-500">*</span>
+              </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                   <FiMail className="text-gray-400" />
@@ -243,7 +247,9 @@ const UserProfile = () => {
                   </div>
                 )}
                 <div>
-                  <label className="label font-semibold text-gray-600">Password Baru</label>
+                  <label className="label font-semibold text-gray-600">
+                    Password Baru <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="password"
                     name="password"
@@ -257,7 +263,9 @@ const UserProfile = () => {
                   />
                 </div>
                 <div>
-                  <label className="label font-semibold text-gray-600">Konfirmasi Password</label>
+                  <label className="label font-semibold text-gray-600">
+                    Konfirmasi Password <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="password"
                     name="confirmPassword"

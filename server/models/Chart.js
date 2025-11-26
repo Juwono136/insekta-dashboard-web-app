@@ -3,19 +3,9 @@ import mongoose from "mongoose";
 const ChartSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    type: {
-      type: String,
-      enum: ["bar", "line", "pie", "area"],
-      default: "bar",
-    },
-    sheetUrl: { type: String, required: true },
-
-    // PERUBAHAN DI SINI: Gunakan 'Object' agar fleksibel menyimpan xAxisKey & dataKeys
-    config: {
-      type: Object,
-      default: {},
-    },
-
+    embedUrl: { type: String, required: true },
+    // [BARU] Field Kategori
+    category: { type: String, default: "General" },
     description: { type: String },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

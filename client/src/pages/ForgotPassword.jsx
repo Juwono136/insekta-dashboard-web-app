@@ -4,7 +4,7 @@ import authService from "../services/authService";
 import toast from "react-hot-toast";
 import { FiArrowLeft, FiMail } from "react-icons/fi";
 import PageLoader from "../components/PageLoader";
-import LogoInsekta from "../assets/logo-insekta.webp";
+import LogoInsektaWhite from "../assets/logo-insekta-white.png";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
     <div className="min-h-screen flex flex-col gap-4 items-center justify-center bg-linear-to-br from-blue-800 to-blue-950 p-4">
       <div className="text-center text-white z-10">
         <div className="inline-block px-6 py-4 bg-white/10 rounded-2xl backdrop-blur-sm shadow-2xl mb-1 border border-white/20">
-          <img src={LogoInsekta} alt="logo-insekta" className="h-12" />
+          <img src={LogoInsektaWhite} alt="logo-insekta" className="h-12" />
         </div>
       </div>
 

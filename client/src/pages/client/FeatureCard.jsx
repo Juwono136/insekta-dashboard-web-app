@@ -1,19 +1,25 @@
 import { FiFolder, FiExternalLink, FiFileText } from "react-icons/fi";
 import { getImageUrl } from "../../utils/imageUrl";
-import { isGoogleDriveUrl } from "../../utils/urlHelper";
+import { isDriveFolder, isPreviewable } from "../../utils/urlHelper";
 
 const FeatureCard = ({ feature, onClick }) => {
   // Tentukan Icon kecil di pojok kanan atas berdasarkan tipe
   const getActionIcon = () => {
     if (feature.type === "folder") return <FiFolder className="text-orange-500" />;
-    // Cek apakah GDrive (Preview) atau Link biasa
-    if (isGoogleDriveUrl(feature.url)) return <FiFileText className="text-orange-800" />;
+
+    // Jika Link Folder Google -> Pakai Icon Folder & Warna Biru
+    if (isDriveFolder(feature.url)) return <FiFolder className="text-blue-600" />;
+
+    // Jika Link File Google -> Pakai Icon File & Warna Hijau
+    if (isPreviewable(feature.url)) return <FiFileText className="text-green-600" />;
+
     return <FiExternalLink className="text-blue-500" />;
   };
 
   const getActionText = () => {
-    if (feature.type === "folder") return "Buka Folder";
-    if (isGoogleDriveUrl(feature.url)) return "Lihat File";
+    if (feature.type === "folder") return "Buka Menu";
+    if (isDriveFolder(feature.url)) return "Buka Folder"; // Teks Khusus Folder
+    if (isPreviewable(feature.url)) return "Lihat File";
     return "Buka Link";
   };
 

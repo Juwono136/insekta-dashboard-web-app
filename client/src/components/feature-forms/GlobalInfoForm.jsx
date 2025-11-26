@@ -13,7 +13,9 @@ const GlobalInfoForm = ({
     <div className="w-full lg:w-1/2 p-6 border-r border-gray-100 overflow-y-auto space-y-6 bg-gray-50/30">
       {/* Input Judul */}
       <div>
-        <label className="label font-bold text-gray-700 text-sm">Judul Menu Global</label>
+        <label className="label font-bold text-gray-700 text-sm">
+          Judul Menu <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           className="input input-bordered w-full bg-white focus:border-blue-500"
@@ -29,7 +31,9 @@ const GlobalInfoForm = ({
 
       {/* Input Icon */}
       <div>
-        <label className="label font-bold text-gray-700 text-sm">Ikon Menu</label>
+        <label className="label font-bold text-gray-700 text-sm">
+          Ikon Menu <span className="text-red-500">*</span>
+        </label>
         <div className="flex flex-col gap-3 border rounded-xl p-4 bg-white border-gray-200 border-dashed">
           <div className="flex items-center justify-center">
             <div className="w-24 h-24 bg-gray-50 rounded-lg flex items-center justify-center shadow-inner overflow-hidden border border-gray-100">

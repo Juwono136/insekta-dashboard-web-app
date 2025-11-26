@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
-import { FiClock, FiBriefcase, FiActivity } from "react-icons/fi";
+import { FiClock, FiBriefcase } from "react-icons/fi";
+import KartunInsekta from "../../assets/kartun-tim-insekta.webp";
 
 const DashboardHeader = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -13,46 +14,47 @@ const DashboardHeader = () => {
     return "Selamat Malam";
   };
 
-  // Format Tanggal Indo
-  const today = new Date().toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
   return (
-    <div className="bg-linear-to-r from-blue-900 to-blue-700 rounded-2xl p-4 text-white shadow-lg mb-8 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-      {/* Dekorasi background tetap sama */}
+    <div className="relative w-full bg-linear-to-r from-blue-900 to-blue-600 rounded-2xl shadow-xl mb-4 overflow-hidden">
+      {/* --- DEKORASI BACKGROUND (ABSTRACT SHAPES) --- */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-20 w-40 h-40 bg-blue-400 opacity-10 rounded-full blur-2xl pointer-events-none"></div>
 
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-center md:items-start p-4">
-        <div className="max-w-2xl space-y-3 text-center md:text-left">
-          <div className="inline-block px-3 py-1 bg-orange-500/20 border border-orange-500/30 rounded-full text-orange-300 text-[10px] lg:text-xs font-bold tracking-wider uppercase mb-1">
+      {/* --- CONTAINER KONTEN --- */}
+      {/* Menggunakan min-h agar banner punya tinggi yang cukup untuk gambar maskot */}
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between p-6 md:p-8 md:min-h-72">
+        {/* BAGIAN KIRI: TEKS (Z-INDEX TINGGI AGAR DI ATAS GAMBAR JIKA OVERLAP) */}
+        <div className="w-full md:w-2/3 space-y-2 text-center md:text-left z-20">
+          {/* Badge Perusahaan */}
+          <div className="inline-block px-3 py-1 bg-white/10 border border-white/20 backdrop-blur-sm rounded-full text-orange-300 text-[10px] font-bold tracking-widest uppercase mb-2">
             Insekta - Pest & Termite Control
           </div>
-          {/* Font size responsive: text-2xl di mobile */}
-          <div className="my-2 flex flex-col gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold text-orange-300">
-              {getGreeting()}, {userInfo?.name?.split(" ")[0]}!
-            </h1>
-            <p className="text-blue-300 text-xs font-medium mb-1 flex justify-center md:justify-start items-center gap-2 md:hidden">
-              <FiClock /> {today}
-            </p>
-            <p className="opacity-80 text-lg flex justify-center md:justify-start items-center gap-2">
-              <FiBriefcase /> {userInfo?.companyName || "Client Area"}
-            </p>
+
+          {/* Sapaan Utama */}
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
+            {getGreeting()},{" "}
+            <span className="text-orange-300">{userInfo?.name?.split(" ")[0]}!</span>
+          </h1>
+
+          {/* Info Tambahan (Waktu & Perusahaan) */}
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-4 text-blue-100 text-sm md:text-lg mt-1">
+            <span className="flex items-center gap-1.5 bg-blue-800/30 px-2 py-1 rounded-md">
+              <FiBriefcase className="text-orange-300" />
+              {userInfo?.companyName || "Client Area"}
+            </span>
           </div>
 
-          <p className="text-sm md:text-base capitalize text-gray-200 opacity-80">
+          <p className="text-sm text-blue-50 opacity-80 leading-relaxed max-w-lg pt-2 md:block">
             Dashboard Pengendalian Hama PT Insekta Fokustama
           </p>
         </div>
 
-        <div className="hidden md:block transform hover:scale-105 transition-transform duration-500">
-          <div className="w-32 h-32 lg:w-48 lg:h-48 bg-linear-to-br from-blue-400 to-blue-600 rounded-2xl shadow-2xl border border-white/20 flex items-center justify-center rotate-6 hover:rotate-0 transition-all">
-            <FiActivity className="text-6xl lg:text-8xl text-white drop-shadow-md" />
-          </div>
+        <div className="hidden md:flex relative md:mt-6 md:absolute md:bottom-0 md:right-6 pointer-events-none">
+          <img
+            src={KartunInsekta}
+            alt="Insekta Mascot"
+            className="w-60 h-60 md:w-96 md:h-96 object-contain object-bottom drop-shadow-2xl filter brightness-110"
+          />
         </div>
       </div>
     </div>

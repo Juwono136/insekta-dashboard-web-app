@@ -13,6 +13,8 @@ import userRoutes from "./routes/userRoutes.js";
 import featureRoutes from "./routes/featureRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import chartRoutes from "./routes/chartRoutes.js";
+import teamRoutes from "./routes/teamRoutes.js";
+import bannerRoutes from "./routes/bannerRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -46,6 +48,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/features", featureRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/charts", chartRoutes);
+app.use("/api/teams", teamRoutes);
+app.use("/api/banners", bannerRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

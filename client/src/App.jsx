@@ -6,7 +6,6 @@ import "./App.css";
 // Pages
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
-import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminLayout from "./layouts/AdminLayout";
 import PageLoader from "./components/PageLoader";
@@ -18,14 +17,11 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import FeatureManagement from "./pages/admin/FeatureManagement";
 import FolderView from "./pages/client/FolderView";
-
-// Layout Wrapper Client
-const ClientLayout = ({ children }) => (
-  <div className="min-h-screen bg-gray-50 font-sans">
-    <Navbar role="client" />
-    <main className="container mx-auto px-4 py-8 lg:px-8 max-w-7xl">{children}</main>
-  </div>
-);
+import TrendHama from "./pages/client/TrendHama";
+import TeamManagement from "./pages/admin/TeamManagement";
+import TimInsekta from "./pages/client/TimInsekta";
+import BannerManagement from "./pages/admin/BannerManagement";
+import ClientLayout from "./pages/client/ClientLayout";
 
 function App() {
   return (
@@ -47,6 +43,8 @@ function App() {
               <Route path="/admin/features" element={<FeatureManagement />} />
               <Route path="/admin/charts" element={<AdminCharts />} />
               <Route path="/admin/profile" element={<UserProfile />} />
+              <Route path="/admin/teams" element={<TeamManagement />} />
+              <Route path="/admin/banners" element={<BannerManagement />} />
             </Route>
           </Route>
 
@@ -58,6 +56,24 @@ function App() {
               element={
                 <ClientLayout>
                   <ClientDashboard />
+                </ClientLayout>
+              }
+            />
+
+            <Route
+              path="/trend-hama"
+              element={
+                <ClientLayout>
+                  <TrendHama />
+                </ClientLayout>
+              }
+            />
+
+            <Route
+              path="//tim-insekta"
+              element={
+                <ClientLayout>
+                  <TimInsekta />
                 </ClientLayout>
               }
             />

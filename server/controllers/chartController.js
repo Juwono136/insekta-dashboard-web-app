@@ -1,86 +1,62 @@
 import Chart from "../models/Chart.js";
-import axios from "axios";
-import Papa from "papaparse";
 
-// Helper: Convert Google Sheet URL to CSV Export URL (Support GID/Sheet ID)
-const convertToCsvUrl = (url) => {
-  try {
-    const idMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-    const docId = idMatch ? idMatch[1] : null;
-
-    // Coba cari GID (Sheet ID) di URL
-    let gid = "0";
-    const gidMatch = url.match(/[#&?]gid=([0-9]+)/);
-    if (gidMatch) {
-      gid = gidMatch[1];
-    }
-
-    if (docId) {
-      return `https://docs.google.com/spreadsheets/d/${docId}/export?format=csv&gid=${gid}`;
-    }
-    return url;
-  } catch (e) {
-    return url;
-  }
-};
-
-// @desc    Get Live Data from Google Sheet (Proxy)
-export const previewSheetData = async (req, res) => {
-  try {
-    const { url } = req.body;
-    if (!url) return res.status(400).json({ message: "URL wajib diisi" });
-
-    const csvUrl = convertToCsvUrl(url);
-    // console.log("Fetching CSV from:", csvUrl);
-
-    const response = await axios.get(csvUrl);
-
-    const parsed = Papa.parse(response.data, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-    });
-
-    if (parsed.data.length === 0) {
-      return res.status(400).json({ message: "Sheet kosong" });
-    }
-
-    res.json({
-      data: parsed.data,
-      headers: parsed.meta.fields || Object.keys(parsed.data[0]),
-    });
-  } catch (error) {
-    console.error("Gsheet Error:", error.message);
-    res.status(500).json({
-      message:
-        'Gagal mengambil data. Pastikan Link Google Sheet bersifat "Public" (Anyone with the link).',
-    });
-  }
-};
-
-// @desc    Create New Chart Config
+// @desc    Create New Chart (Embed)
 // @route   POST /api/charts
 export const createChart = async (req, res) => {
   try {
-    // --- PERBAIKAN DI SINI ---
-    // Tambahkan 'config' ke dalam destructuring req.body
-    const { title, type, sheetUrl, description, config } = req.body;
+    const { title, embedUrl, description, category } = req.body; // Ada category
+
+    if (!title || !embedUrl) {
+      return res.status(400).json({ message: "Judul dan Link Embed wajib diisi" });
+    }
+
+    // Bersihkan URL
+    let cleanUrl = embedUrl;
+    const srcMatch = embedUrl.match(/src="([^"]+)"/);
+    if (srcMatch) cleanUrl = srcMatch[1];
 
     const newChart = await Chart.create({
       title,
-      type,
-      sheetUrl,
+      embedUrl: cleanUrl,
+      category: category || "General", // Default General
       description,
-      config, // <-- Masukkan config ke database
       createdBy: req.user._id,
     });
+
     res.status(201).json(newChart);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get All Charts (Pagination & Search)
+export const updateChart = async (req, res) => {
+  try {
+    const { title, embedUrl, description, category } = req.body;
+    const chart = await Chart.findById(req.params.id);
+
+    if (chart) {
+      chart.title = title || chart.title;
+      chart.category = category || chart.category;
+      chart.description = description || chart.description;
+
+      if (embedUrl) {
+        let cleanUrl = embedUrl;
+        const srcMatch = embedUrl.match(/src="([^"]+)"/);
+        if (srcMatch) cleanUrl = srcMatch[1];
+        chart.embedUrl = cleanUrl;
+      }
+
+      const updatedChart = await chart.save();
+      res.json(updatedChart);
+    } else {
+      res.status(404).json({ message: "Chart tidak ditemukan" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get All Charts
 // @route   GET /api/charts
 export const getCharts = async (req, res) => {
   try {
@@ -106,7 +82,6 @@ export const getCharts = async (req, res) => {
 };
 
 // @desc    Delete Chart
-// @route   DELETE /api/charts/:id
 export const deleteChart = async (req, res) => {
   try {
     await Chart.deleteOne({ _id: req.params.id });

@@ -3,7 +3,7 @@ const styles = {
   container:
     "font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;",
   header: "background-color: #0056b3; padding: 20px; text-align: center;",
-  headerText: "color: #ffffff; font-size: 24px; font-weight: bold; margin: 0;",
+  logo: "max-width: 200px; height: auto; display: block; margin: 0 auto;",
   content: "padding: 30px; background-color: #ffffff; color: #333333; line-height: 1.6;",
   button:
     "display: inline-block; padding: 12px 24px; background-color: #ff9900; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;",
@@ -18,7 +18,9 @@ const wrapEmail = (content) => {
   return `
     <div style="${styles.container}">
       <div style="${styles.header}">
-        <h1 style="${styles.headerText}">INSEKTA</h1>
+        <img src="https://res.cloudinary.com/dz8dtz5ki/image/upload/v1764166789/logo-insekta_wp1xiq.png" alt="INSEKTA Logo" style="${
+          styles.logo
+        }" />
       </div>
       <div style="${styles.content}">
         ${content}
@@ -51,9 +53,9 @@ export const resetPasswordTemplate = (url) => {
 // 3. Template Welcome User (Untuk User Baru yang dibuat Admin)
 export const welcomeUserTemplate = (name, email, password, loginUrl) => {
   const content = `
-    <h2>Selamat Datang di Insekta Dashboard!</h2>
+    <h2>Selamat Datang di Dashboard Insekta!</h2>
     <p>Halo <strong>${name}</strong>,</p>
-    <p>Akun Anda telah berhasil dibuat oleh Administrator. Berikut adalah kredensial login Anda:</p>
+    <p>Kamu mendapatkan undangan dari Insekta untuk Akses Dashboard Insekta - Pest & Termite Control. Berikut adalah kredensial login Anda:</p>
     
     <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
       <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>

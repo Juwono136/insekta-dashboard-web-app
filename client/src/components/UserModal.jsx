@@ -101,7 +101,9 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
 
           <div className="grid grid-cols-2 gap-4">
             <div className="form-control">
-              <label className="label font-semibold text-gray-700 text-sm">Role</label>
+              <label className="label font-semibold text-gray-700 text-sm">
+                Role <span className="text-red-500">*</span>
+              </label>
               <select
                 className="select select-bordered w-full"
                 value={formData.role}

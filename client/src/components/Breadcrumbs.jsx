@@ -13,10 +13,11 @@ const Breadcrumbs = () => {
     features: "Manajemen Fitur",
     charts: "Data Grafik",
     profile: "Profile Saya",
+    "trend-hama": "Trend Hama",
   };
 
   return (
-    <div className="text-sm breadcrumbs text-gray-500 mb-6">
+    <div className="text-sm breadcrumbs p-0 text-gray-500 mb-6">
       <ul>
         <li>
           <Link to="/" className="flex items-center gap-1 hover:text-blue-800">

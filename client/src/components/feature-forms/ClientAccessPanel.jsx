@@ -52,7 +52,7 @@ const ClientAccessPanel = ({
       {/* 1. Search Header */}
       <div className="p-3 border-b border-gray-100 bg-white sticky top-0 z-10">
         <div className="relative">
-          <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
+          <FiSearch className="absolute z-10 left-3 top-2 text-gray-400" />
           <input
             type="text"
             className="input input-sm input-bordered w-full pl-9 rounded-full focus:border-blue-500"

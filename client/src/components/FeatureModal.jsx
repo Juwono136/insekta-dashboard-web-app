@@ -10,7 +10,6 @@ import ConfirmationAlert from "./feature-forms/ConfirmationAlert";
 import toast from "react-hot-toast";
 
 const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
-  // --- STATE ---
   const [title, setTitle] = useState("");
   const [iconFile, setIconFile] = useState(null);
   const [iconPreview, setIconPreview] = useState("");
@@ -25,7 +24,7 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
   const [allClients, setAllClients] = useState([]);
 
   // State Konfirmasi (Safety)
-  const [confirmState, setConfirmState] = useState(null); // { type: 'uncheckAll' | 'deleteSub', data: ... }
+  const [confirmState, setConfirmState] = useState(null);
 
   // --- INIT DATA ---
   useEffect(() => {
@@ -55,18 +54,25 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
 
         // Load User Configs (Convert Array to Object Map)
         const configMap = {};
-        initialData.assignedTo.forEach((item) => {
-          // Handle populate user object vs string ID
-          const uid = typeof item.user === "object" ? item.user._id : item.user;
+        if (initialData.assignedTo && Array.isArray(initialData.assignedTo)) {
+          initialData.assignedTo.forEach((item) => {
+            // [PERBAIKAN BUG CRITICAL DISINI]
+            // Cek jika user bernilai null (karena user sudah dihapus di User Management)
+            // Jika null, kita skip agar tidak error reading '_id'
+            if (!item.user) return;
 
-          configMap[uid] = {
-            isCustom: item.isCustom || false,
-            type: item.type || "single",
-            url: item.url || "",
-            subMenus: item.subMenus || [],
-            companyName: item.companyName,
-          };
-        });
+            // Handle populate user object vs string ID
+            const uid = typeof item.user === "object" ? item.user._id : item.user;
+
+            configMap[uid] = {
+              isCustom: item.isCustom || false,
+              type: item.type || "single",
+              url: item.url || "",
+              subMenus: item.subMenus || [],
+              companyName: item.companyName,
+            };
+          });
+        }
         setUserConfigs(configMap);
       } else {
         // Reset Form (Create Mode)
@@ -85,8 +91,8 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
     const file = e.target.files[0];
     if (file) {
       const validTypes = ["image/jpeg", "image/png", "image/webp"];
-      if (!validTypes.includes(file.type)) return toast.error("Format harus PNG, JPG, WEBP.");
-      if (file.size > 2 * 1024 * 1024) return toast.error("Maksimal 2MB.");
+      if (!validTypes.includes(file.type)) return alert("Format harus PNG, JPG, WEBP.");
+      if (file.size > 2 * 1024 * 1024) return alert("Maksimal 2MB.");
 
       setIconFile(file);
       setIconPreview(URL.createObjectURL(file));
@@ -155,19 +161,16 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
 
     // Validasi Global
     if (!title) return alert("Judul menu wajib diisi.");
-    if (userIds.length === 0) return toast.error("Pilih minimal satu client.");
+    if (userIds.length === 0) return alert("Pilih minimal satu client.");
 
-    // [PERBAIKAN] Hapus validasi ketat Default URL.
-    // Biarkan kosong jika admin memang tidak ingin ada default link.
-
-    // Validasi Custom Config (Tetap validasi jika admin sudah mencentang 'Custom')
+    // Validasi Custom Config
     for (let uid of userIds) {
       const conf = userConfigs[uid];
       if (conf.isCustom) {
         if (conf.type === "single" && !conf.url)
-          return toast.error(`URL Custom untuk client masih kosong!`);
+          return alert(`URL Custom untuk client ID ${uid} masih kosong!`);
         if (conf.type === "folder" && conf.subMenus.length === 0)
-          return toast.error(`Folder Custom untuk client masih kosong!`);
+          return alert(`Folder Custom untuk client ID ${uid} kosong!`);
       }
     }
 
@@ -179,9 +182,11 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
 
     const payload = {
       title,
+      // Kirim Default Configs
       defaultType: defaultConfig.type,
       defaultUrl: defaultConfig.url,
       defaultSubMenus: JSON.stringify(defaultConfig.subMenus),
+      // Kirim User Configs
       assignedTo: JSON.stringify(assignedToArray),
     };
 
