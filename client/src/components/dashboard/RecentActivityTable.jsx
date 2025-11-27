@@ -53,7 +53,7 @@ const RecentActivityTable = ({ features }) => {
                           <div key={u._id} className="avatar border-2 border-blue-900 w-6 h-6">
                             <div className="bg-gray-200 text-gray-600 text-[10px]">
                               <img
-                                src={getImageUrl(u.user.avatar) || u.user.avatar}
+                                src={getImageUrl(u.user?.avatar) || u.user?.avatar}
                                 alt="image-profile"
                               />
                             </div>
