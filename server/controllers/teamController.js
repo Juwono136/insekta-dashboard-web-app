@@ -1,52 +1,37 @@
 import Team from "../models/Team.js";
-import sharp from "sharp";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import { saveImage, deleteImage } from "../utils/imageProcessor.js";
 import mongoose from "mongoose";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// --- HELPER FUNCTIONS ---
-
-// 1. Hapus file fisik dengan aman
-const safeDeleteFile = (relativePath) => {
-  if (!relativePath) return;
-  try {
-    const fullPath = path.join(__dirname, "../public", relativePath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-    }
-  } catch (err) {
-    console.error(`Gagal menghapus file ${relativePath}:`, err.message);
-  }
-};
-
-// 2. Validasi Format Nomor HP Indonesia (08xx, 628xx, +628xx)
+// Validasi Format Nomor HP Indonesia (08xx, 628xx, +628xx)
 const isValidPhone = (phone) => {
   const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,11}$/;
   return phoneRegex.test(phone);
 };
 
 // --- CONTROLLERS ---
-
 // @desc    Get All Teams
 export const getTeams = async (req, res) => {
   try {
     const { search, page = 1, limit = 10 } = req.query;
     const query = {};
 
+    // [LOGIC BARU] Filter berdasarkan Role
+    // Jika ADMIN: Bisa lihat semua (bisa filter by search)
+    // Jika CLIENT: Hanya lihat tim yang assignedClients-nya mengandung ID saya
+    if (req.user.role !== "admin") {
+      query.assignedClients = req.user._id;
+    }
+
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { area: { $regex: search, $options: "i" } },
-        { role: { $regex: search, $options: "i" } },
       ];
     }
 
     const total = await Team.countDocuments(query);
     const teams = await Team.find(query)
+      .populate("assignedClients", "name companyName") // Populate info client untuk Admin
       .sort({ area: 1, name: 1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
@@ -73,10 +58,10 @@ export const getAreas = async (req, res) => {
 
 // @desc    Create Team Member
 export const createTeam = async (req, res) => {
-  let uploadedPhotoPath = ""; // Default kosong
+  let uploadedPhotoPath = "";
 
   try {
-    const { name, role, phone, area, outlets } = req.body;
+    const { name, role, phone, area, outlets, assignedClients } = req.body;
 
     // 1. Validasi Input Wajib (HAPUS CHECK REQ.FILE)
     if (!name || !role || !phone || !area) {
@@ -89,21 +74,21 @@ export const createTeam = async (req, res) => {
       return res.status(400).json({ message: "Format Nomor HP tidak valid." });
     }
 
+    let clientsArray = [];
+    if (assignedClients) {
+      try {
+        clientsArray = JSON.parse(assignedClients);
+      } catch (e) {
+        return res.status(400).json({ message: "Format data client tidak valid." });
+      }
+    }
+
     // 3. Proses Upload Foto (Hanya jika ada file)
     if (req.file) {
-      const filename = `team-${Date.now()}-${Math.round(Math.random() * 1e9)}.jpeg`;
-      const uploadDir = path.join(__dirname, "../public/uploads/teams");
-
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-      const fullPath = path.join(uploadDir, filename);
-
-      await sharp(req.file.buffer)
-        .resize(400, 400, { fit: "cover", position: "top" })
-        .jpeg({ quality: 80, mozjpeg: true })
-        .toFile(fullPath);
-
-      uploadedPhotoPath = `/uploads/teams/${filename}`;
+      uploadedPhotoPath = await saveImage(req.file.buffer, "teams", 400, {
+        format: "jpeg",
+        fit: "cover",
+      });
     }
 
     // 4. Simpan ke DB (Photo bisa string kosong)
@@ -113,13 +98,14 @@ export const createTeam = async (req, res) => {
       phone,
       area,
       outlets,
-      photo: uploadedPhotoPath, // Bisa string kosong
+      photo: uploadedPhotoPath,
+      assignedClients: clientsArray,
       createdBy: req.user._id,
     });
 
     res.status(201).json(team);
   } catch (error) {
-    if (uploadedPhotoPath) safeDeleteFile(uploadedPhotoPath);
+    if (uploadedPhotoPath) deleteImage(uploadedPhotoPath);
     console.error("Error createTeam:", error);
     res.status(500).json({ message: error.message });
   }
@@ -129,7 +115,7 @@ export const createTeam = async (req, res) => {
 export const updateTeam = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, role, phone, area, outlets } = req.body;
+    const { name, role, phone, area, outlets, assignedClients } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "ID Anggota tidak valid." });
@@ -150,23 +136,21 @@ export const updateTeam = async (req, res) => {
     team.area = area || team.area;
     team.outlets = outlets || team.outlets;
 
+    // Update Clients
+    if (assignedClients) {
+      try {
+        team.assignedClients = JSON.parse(assignedClients);
+      } catch (e) {
+        console.error("Parse Error", e);
+      }
+    }
+
     // Update Foto (Opsional saat Edit)
     if (req.file) {
       // Hapus foto lama
-      if (team.photo) safeDeleteFile(team.photo);
+      if (team.photo) deleteImage(team.photo);
 
-      // Simpan foto baru
-      const filename = `team-${Date.now()}.jpeg`;
-      const uploadDir = path.join(__dirname, "../public/uploads/teams");
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-      const fullPath = path.join(uploadDir, filename);
-      await sharp(req.file.buffer)
-        .resize(400, 400, { fit: "cover", position: "top" })
-        .jpeg({ quality: 80, mozjpeg: true })
-        .toFile(fullPath);
-
-      team.photo = `/uploads/teams/${filename}`;
+      team.photo = await saveImage(req.file.buffer, "teams", 400, { format: "jpeg", fit: "cover" });
     }
 
     const updatedTeam = await team.save();
@@ -182,7 +166,7 @@ export const deleteTeam = async (req, res) => {
     const team = await Team.findById(req.params.id);
     if (!team) return res.status(404).json({ message: "Data tidak ditemukan." });
 
-    if (team.photo) safeDeleteFile(team.photo);
+    if (team.photo) deleteImage(team.photo);
 
     await Team.deleteOne({ _id: req.params.id });
     res.json({ message: "Berhasil dihapus" });

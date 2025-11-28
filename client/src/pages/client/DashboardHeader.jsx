@@ -15,7 +15,7 @@ const DashboardHeader = () => {
   };
 
   return (
-    <div className="relative w-full bg-linear-to-r from-blue-900 to-blue-600 rounded-2xl shadow-xl mb-4 overflow-hidden">
+    <div className="relative w-full bg-linear-to-r from-[#093050] to-blue-800 rounded-2xl shadow-xl mb-4 overflow-hidden">
       {/* --- DEKORASI BACKGROUND (ABSTRACT SHAPES) --- */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 left-20 w-40 h-40 bg-blue-400 opacity-10 rounded-full blur-2xl pointer-events-none"></div>
@@ -26,20 +26,20 @@ const DashboardHeader = () => {
         {/* BAGIAN KIRI: TEKS (Z-INDEX TINGGI AGAR DI ATAS GAMBAR JIKA OVERLAP) */}
         <div className="w-full md:w-2/3 space-y-2 text-center md:text-left z-20">
           {/* Badge Perusahaan */}
-          <div className="inline-block px-3 py-1 bg-white/10 border border-white/20 backdrop-blur-sm rounded-full text-orange-300 text-[10px] font-bold tracking-widest uppercase mb-2">
+          <div className="inline-block px-3 py-1 bg-white/10 border border-white/20 backdrop-blur-sm rounded-full text-[#feba12] text-[10px] font-bold tracking-widest uppercase mb-2">
             Insekta - Pest & Termite Control
           </div>
 
           {/* Sapaan Utama */}
           <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
             {getGreeting()},{" "}
-            <span className="text-orange-300">{userInfo?.name?.split(" ")[0]}!</span>
+            <span className="text-[#feba12]">{userInfo?.name?.split(" ")[0]}!</span>
           </h1>
 
           {/* Info Tambahan (Waktu & Perusahaan) */}
           <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-4 text-blue-100 text-sm md:text-lg mt-1">
-            <span className="flex items-center gap-1.5 bg-blue-800/30 px-2 py-1 rounded-md">
-              <FiBriefcase className="text-orange-300" />
+            <span className="flex items-center gap-1.5 bg-blue-600/30 px-2 py-1 rounded-md">
+              <FiBriefcase className="text-[#feba12]" />
               {userInfo?.companyName || "Client Area"}
             </span>
           </div>

@@ -69,8 +69,10 @@ const TrendHama = () => {
             <FiTrendingUp size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Trend Temuan Hama</h2>
-            <p className="text-sm text-gray-500">Laporan visual dan analisa data lapangan.</p>
+            <h2 className="text-2xl font-bold text-gray-800">Laporan Insekta Terkini</h2>
+            <p className="text-sm text-gray-500">
+              Laporan terkait visual dan analisa data lapangan.
+            </p>
           </div>
         </div>
 

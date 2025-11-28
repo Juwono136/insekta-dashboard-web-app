@@ -2,13 +2,7 @@ import User from "../models/User.js";
 import crypto from "crypto"; // Bawaan Node.js untuk random string
 import { welcomeUserTemplate } from "../utils/emailTemplates.js";
 import sendEmail from "../utils/sendEmail.js";
-import sharp from "sharp";
-import path from "path"; // <--- INI WAJIB ADA
-import fs from "fs"; // <--- INI WAJIB ADA
-import { fileURLToPath } from "url"; // <--- INI WAJIB ADA
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { saveImage, deleteImage } from "../utils/imageProcessor.js";
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -126,7 +120,6 @@ export const createUserByAdmin = async (req, res) => {
         console.log(`📧 Email terkirim ke ${user.email}`);
       } catch (emailError) {
         console.error("Gagal kirim email:", emailError);
-        // Jangan throw error, user tetap berhasil dibuat, tapi admin harus tahu
       }
 
       res.status(201).json({
@@ -151,6 +144,7 @@ export const createUserByAdmin = async (req, res) => {
 // @desc    Update User Profile (Termasuk Ganti Pass & Upload Avatar)
 // @route   PUT /api/users/profile
 export const updateUserProfile = async (req, res) => {
+  let photoUrl = "";
   try {
     const user = await User.findById(req.user._id);
 
@@ -171,26 +165,13 @@ export const updateUserProfile = async (req, res) => {
       if (req.file) {
         // Hapus avatar lama jika bukan default/link luar
         if (user.avatar && user.avatar.startsWith("/uploads")) {
-          const oldPath = path.join(__dirname, "../public", user.avatar);
-          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+          deleteImage(user.avatar);
         }
 
-        // Simpan yang baru
-        const filename = `user-${user._id}-${Date.now()}.jpeg`;
-        const outputPath = path.join(__dirname, "../public/uploads/icons", filename);
-
-        // Pastikan folder ada (sama seperti feature)
-        if (!fs.existsSync(path.join(__dirname, "../public/uploads/icons"))) {
-          fs.mkdirSync(path.join(__dirname, "../public/uploads/icons"), { recursive: true });
-        }
-
-        await sharp(req.file.buffer)
-          .resize(200, 200) // Resize kotak
-          .toFormat("jpeg")
-          .jpeg({ quality: 90 })
-          .toFile(outputPath);
-
-        user.avatar = `/uploads/icons/${filename}`;
+        user.avatar = await saveImage(req.file.buffer, "users", 400, {
+          format: "jpeg",
+          fit: "cover",
+        });
       }
 
       // 3. Ganti Password (Dengan Validasi Old Password)
@@ -275,6 +256,8 @@ export const deleteUser = async (req, res) => {
         res.status(400);
         throw new Error("Admin utama tidak bisa dihapus sembarangan");
       }
+
+      if (user.avatar) deleteImage(user.avatar);
       await User.deleteOne({ _id: user._id });
       res.status(200).json({ message: "User berhasil dihapus" });
     } else {

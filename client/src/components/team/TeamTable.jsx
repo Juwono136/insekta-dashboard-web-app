@@ -59,9 +59,16 @@ const TeamTable = ({ teams, pagination, onPageChange, onEdit, onDelete }) => {
                     </div>
                   </td>
                   <td>
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
-                      <FiMapPin size={10} /> {team.area}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-100 w-fit">
+                        <FiMapPin size={10} /> {team.area}
+                      </span>
+                      {/* [BARU] Info Assign */}
+                      <span className="text-[10px] text-gray-500 flex items-center gap-1 mt-1">
+                        <FiUsers size={10} /> Akses:{" "}
+                        <b>{team.assignedClients?.length || 0} Client</b>
+                      </span>
+                    </div>
                   </td>
                   <td className="max-w-xs">
                     <p className="text-xs text-gray-600 truncate" title={team.outlets}>

@@ -89,7 +89,7 @@ const Navbar = ({ toggleSidebar, role }) => {
 
           {role === "client" && !userInfo.isFirstLogin && (
             <NavLink
-              to="/trend-hama"
+              to="/laporan-insekta"
               className={({ isActive }) =>
                 `hidden md:flex text-sm items-center gap-2 p-2 rounded-md transition-all duration-300 ${
                   isActive
@@ -99,7 +99,7 @@ const Navbar = ({ toggleSidebar, role }) => {
               }
             >
               <FiTrendingUp size={15} />
-              <span className="font-medium">Trend Hama</span>
+              <span className="font-medium">Laporan Insekta</span>
             </NavLink>
           )}
 

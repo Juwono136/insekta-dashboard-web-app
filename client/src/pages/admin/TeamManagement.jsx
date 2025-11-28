@@ -44,7 +44,7 @@ const TeamManagement = () => {
       const data = await teamService.getAreas();
       setAreaList(data);
     } catch (e) {
-      console.error("Gagal area");
+      console.error("Gagal load area");
     }
   };
 
@@ -60,12 +60,13 @@ const TeamManagement = () => {
   // --- ACTION HANDLERS ---
 
   // Menangani Save (Create/Edit) dari Modal
-  const handleSave = async (formDataRaw, photoFile) => {
+  const handleSave = async (formDataRaw, photoFile, selectedClients) => {
     setIsSubmitting(true);
     try {
       const data = new FormData();
       Object.keys(formDataRaw).forEach((key) => data.append(key, formDataRaw[key]));
       if (photoFile) data.append("photo", photoFile);
+      data.append("assignedClients", JSON.stringify(selectedClients));
 
       if (modalType === "edit") {
         await teamService.updateTeam(selectedTeam._id, data);
@@ -75,8 +76,10 @@ const TeamManagement = () => {
         toast.success("Anggota tim ditambahkan");
       }
       setModalType(null);
+
+      // REFRESH DATA & AREA (PENTING!)
       fetchTeams();
-      fetchAreas();
+      fetchAreas(); // Update list area dropdown (jika ada area baru/hapus)
     } catch (error) {
       toast.error(error.response?.data?.message || "Gagal menyimpan");
     } finally {
@@ -84,14 +87,16 @@ const TeamManagement = () => {
     }
   };
 
-  // Menangani Delete
   const handleDelete = async () => {
     setIsSubmitting(true);
     try {
       await teamService.deleteTeam(selectedTeam._id);
-      toast.success("Dihapus");
+      toast.success("Nama Tim dihapus");
       setModalType(null);
+
+      // REFRESH DATA & AREA (PENTING!)
       fetchTeams();
+      fetchAreas(); // Update list area dropdown (jika area tersebut hilang)
     } catch (error) {
       toast.error("Gagal hapus");
     } finally {

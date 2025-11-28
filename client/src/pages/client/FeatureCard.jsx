@@ -1,6 +1,6 @@
-import { FiFolder, FiExternalLink, FiFileText } from "react-icons/fi";
+import { FiFolder, FiExternalLink, FiFileText, FiBarChart2 } from "react-icons/fi";
 import { getImageUrl } from "../../utils/imageUrl";
-import { isDriveFolder, isPreviewable } from "../../utils/urlHelper";
+import { isDriveFolder, isGoogleChart, isPreviewable } from "../../utils/urlHelper";
 
 const FeatureCard = ({ feature, onClick }) => {
   // Tentukan Icon kecil di pojok kanan atas berdasarkan tipe
@@ -9,6 +9,8 @@ const FeatureCard = ({ feature, onClick }) => {
 
     // Jika Link Folder Google -> Pakai Icon Folder & Warna Biru
     if (isDriveFolder(feature.url)) return <FiFolder className="text-blue-600" />;
+
+    if (isGoogleChart(feature.url)) return <FiBarChart2 className="text-purple-600" />;
 
     // Jika Link File Google -> Pakai Icon File & Warna Hijau
     if (isPreviewable(feature.url)) return <FiFileText className="text-green-600" />;
@@ -19,6 +21,7 @@ const FeatureCard = ({ feature, onClick }) => {
   const getActionText = () => {
     if (feature.type === "folder") return "Buka Menu";
     if (isDriveFolder(feature.url)) return "Buka Folder"; // Teks Khusus Folder
+    if (isGoogleChart(feature.url)) return "Lihat Grafik";
     if (isPreviewable(feature.url)) return "Lihat File";
     return "Buka Link";
   };

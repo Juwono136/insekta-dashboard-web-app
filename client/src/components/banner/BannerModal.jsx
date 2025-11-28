@@ -36,12 +36,12 @@ const BannerModal = ({ isOpen, onClose, onSubmit, initialData }) => {
       };
     if (formData.type === "warning")
       return {
-        bg: "bg-gradient-to-r from-orange-500 to-yellow-400",
+        bg: "bg-gradient-to-r from-orange-500 to-[#feba12]",
         icon: <FiAlertCircle size={24} />,
         label: "Penting",
       };
     return {
-      bg: "bg-gradient-to-r from-blue-500 to-cyan-400",
+      bg: "bg-gradient-to-r from-[#093050] to-blue-600",
       icon: <BsMegaphone size={24} />,
       label: "Info",
     };

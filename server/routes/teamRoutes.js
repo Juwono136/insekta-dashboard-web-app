@@ -7,17 +7,13 @@ import {
   getAreas,
 } from "../controllers/teamController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
-import multer from "multer";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/areas", protect, getAreas);
 
-router
-  .route("/")
-  .get(protect, getTeams) // Client perlu akses GET juga
-  .post(protect, admin, upload.single("photo"), createTeam);
+router.route("/").get(protect, getTeams).post(protect, admin, upload.single("photo"), createTeam);
 
 router
   .route("/:id")

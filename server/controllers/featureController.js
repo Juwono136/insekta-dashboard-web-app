@@ -1,17 +1,12 @@
 import Feature from "../models/Feature.js";
 import mongoose from "mongoose";
-import sharp from "sharp";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-
-// Setup path untuk save file (ES Module fix)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { saveImage, deleteImage } from "../utils/imageProcessor.js";
 
 // @desc    Create New Feature
 // @route   POST /api/features
 export const createFeature = async (req, res) => {
+  let iconPath = "";
+
   try {
     const { title, assignedTo, defaultType, defaultUrl, defaultSubMenus } = req.body;
 
@@ -25,60 +20,31 @@ export const createFeature = async (req, res) => {
       return res.status(400).json({ message: "Icon wajib diupload (PNG/JPG/WEBP)" });
     }
 
-    // 3. Parsing Data JSON (karena dikirim via FormData)
-    let assignedParsed = [];
-    if (assignedTo) {
-      try {
-        assignedParsed = JSON.parse(assignedTo);
-      } catch (e) {
-        return res.status(400).json({ message: "Format data akses client invalid" });
-      }
-    } else {
-      return res.status(400).json({ message: "Harus memilih minimal satu client" });
-    }
-
-    let defaultSubMenusParsed = [];
-    if (defaultSubMenus) {
-      try {
-        defaultSubMenusParsed = JSON.parse(defaultSubMenus);
-      } catch (e) {
-        defaultSubMenusParsed = [];
-      }
-    }
-
-    // 4. IMAGE PROCESSING (Local Storage)
-    const filename = `icon-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
-    const uploadDir = path.join(__dirname, "../public/uploads/icons");
-
-    // Pastikan folder ada
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const outputPath = path.join(uploadDir, filename);
-
-    // Resize & Save
-    await sharp(req.file.buffer)
-      .resize(200, 200, {
+    if (req.file) {
+      iconPath = await saveImage(req.file.buffer, "features", 200, {
+        format: "png",
         fit: "contain",
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      })
-      .toFormat("png")
-      .toFile(outputPath);
+      });
+    }
+
+    let parsedSubMenus = [];
+    let parsedAssignedTo = [];
+
+    try {
+      if (defaultSubMenus) parsedSubMenus = JSON.parse(defaultSubMenus);
+      if (assignedTo) parsedAssignedTo = JSON.parse(assignedTo);
+    } catch (e) {
+      return res.status(400).json({ message: "Format data JSON tidak valid." });
+    }
 
     // 5. Simpan ke Database
     const feature = await Feature.create({
       title,
-      icon: `/uploads/icons/${filename}`, // Path lokal
-
-      // Simpan Default Config
+      icon: iconPath,
       defaultType: defaultType || "single",
       defaultUrl: defaultType === "single" ? defaultUrl : "",
-      defaultSubMenus: defaultType === "folder" ? defaultSubMenusParsed : [],
-
-      // Simpan User Specific Config
-      assignedTo: assignedParsed,
-
+      defaultSubMenus: defaultType === "folder" ? parsedSubMenus : [],
+      assignedTo: parsedAssignedTo,
       createdBy: req.user._id,
     });
 
@@ -134,28 +100,12 @@ export const updateFeature = async (req, res) => {
 
     // 4. Update Icon (Jika ada file baru diupload)
     if (req.file) {
-      // Hapus icon lama fisik
-      if (feature.icon) {
-        const oldPath = path.join(__dirname, "../public", feature.icon);
-        if (fs.existsSync(oldPath)) {
-          try {
-            fs.unlinkSync(oldPath);
-          } catch (err) {
-            console.error("Gagal hapus icon lama:", err);
-          }
-        }
-      }
+      if (feature.icon) deleteImage(feature.icon);
 
-      // Simpan icon baru
-      const filename = `icon-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
-      const outputPath = path.join(__dirname, "../public/uploads/icons", filename);
-
-      await sharp(req.file.buffer)
-        .resize(200, 200, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-        .toFormat("png")
-        .toFile(outputPath);
-
-      feature.icon = `/uploads/icons/${filename}`;
+      feature.icon = await saveImage(req.file.buffer, "features", 200, {
+        format: "png",
+        fit: "contain",
+      });
     }
 
     const updatedFeature = await feature.save();
@@ -237,13 +187,12 @@ export const getMyFeatures = async (req, res) => {
           _id: f._id,
           title: f.title,
           icon: f.icon,
-          // Return hasil final yang sudah dipilih
           type: finalType,
           url: finalUrl,
           subMenus: finalSubMenus,
         };
       })
-      .filter(Boolean); // Hapus null jika ada
+      .filter(Boolean);
 
     res.status(200).json(myFeatures);
   } catch (error) {
@@ -260,16 +209,7 @@ export const deleteFeature = async (req, res) => {
     if (!feature) return res.status(404).json({ message: "Fitur tidak ditemukan" });
 
     // Hapus file icon fisik
-    if (feature.icon) {
-      const filePath = path.join(__dirname, "../public", feature.icon);
-      if (fs.existsSync(filePath)) {
-        try {
-          fs.unlinkSync(filePath);
-        } catch (err) {
-          console.error("Gagal hapus file icon:", err);
-        }
-      }
-    }
+    if (feature.icon) deleteImage(feature.icon);
 
     await Feature.deleteOne({ _id: id });
     res.status(200).json({ message: "Fitur berhasil dihapus" });

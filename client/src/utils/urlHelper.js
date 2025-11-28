@@ -8,9 +8,15 @@ export const isDriveFolder = (url) => {
   return url.includes("/drive/folders/") || url.includes("/folderview");
 };
 
+export const isGoogleChart = (url) => {
+  if (!url) return false;
+  // URL Chart biasanya mengandung /pubchart atau /htmlembed
+  return url.includes("/pubchart") || (url.includes("docs.google.com") && url.includes("trix"));
+};
+
 // [UPDATE] Helper untuk memastikan hanya FILE yang dianggap bisa dipreview
 export const isPreviewable = (url) => {
-  return isGoogleDriveUrl(url) && !isDriveFolder(url);
+  return (isGoogleDriveUrl(url) || isGoogleChart(url)) && !isDriveFolder(url);
 };
 
 export const getEmbedUrl = (url) => {
@@ -19,8 +25,11 @@ export const getEmbedUrl = (url) => {
   // Jika folder, kembalikan URL asli (karena tidak akan di-embed)
   if (isDriveFolder(url)) return url;
 
-  let embedUrl = url;
+  if (isGoogleChart(url)) {
+    return url;
+  }
 
+  let embedUrl = url;
   if (url.includes("/view")) {
     embedUrl = url.replace("/view", "/preview");
   } else if (url.includes("/edit")) {

@@ -3,11 +3,17 @@ import mongoose from "mongoose";
 const TeamSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    role: { type: String, default: "Teknisi" }, // Teknisi, Supervisor, dll
+    role: { type: String, default: "Teknisi" },
     phone: { type: String, required: true },
-    area: { type: String, required: true }, // Jakarta, Bandung, dll
-    outlets: { type: String }, // Disimpan sebagai text panjang (misal: Outlet A, Outlet B)
-    photo: { type: String }, // URL Foto
+    area: { type: String, required: true }, // Tetap ada sebagai Label Grouping
+    outlets: { type: String },
+    photo: { type: String },
+    assignedClients: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

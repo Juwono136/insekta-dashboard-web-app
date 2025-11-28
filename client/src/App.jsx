@@ -61,7 +61,7 @@ function App() {
             />
 
             <Route
-              path="/trend-hama"
+              path="/laporan-insekta"
               element={
                 <ClientLayout>
                   <TrendHama />
