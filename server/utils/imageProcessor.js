@@ -1,81 +1,97 @@
 import sharp from "sharp";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
+
+// 1. Konfigurasi Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 /**
- * Memproses buffer gambar, resize, compress, dan simpan ke disk.
+ * Memproses buffer dengan Sharp lalu upload ke Cloudinary.
  * @param {Buffer} fileBuffer - Buffer dari req.file.buffer
- * @param {String} folderName - Nama folder tujuan (misal: 'teams', 'features')
+ * @param {String} folderName - Nama folder di Cloudinary (misal: 'insekta/teams')
  * @param {Number} width - Lebar resize
- * @param {Object} options - Opsi tambahan { format: 'jpeg'|'png'|'webp', fit: 'cover'|'contain' }
- * @returns {String} - URL path relatif untuk disimpan di database
+ * @param {Object} options - Opsi tambahan { format: 'jpeg'|'png' }
+ * @returns {String} - URL Secure HTTPS dari Cloudinary
  */
 export const saveImage = async (fileBuffer, folderName, width = 500, options = {}) => {
-  try {
-    // 1. Setup Default Options
-    const format = options.format || "jpeg"; // Default jpeg jika tidak diset
-    const fit = options.fit || "cover"; // Default cover (potong kotak)
+  return new Promise(async (resolve, reject) => {
+    try {
+      const format = options.format || "jpeg";
+      const fit = options.fit || "cover";
 
-    // 2. Tentukan Ekstensi File
-    let ext = format;
-    if (format === "jpeg") ext = "jpg";
+      // 1. Proses Buffer dengan SHARP (Resize & Compress di Memori)
+      // Kita tetap pakai Sharp agar file yg dikirim ke Cloudinary sudah optimal/kecil
+      let pipeline = sharp(fileBuffer).resize(width, width, {
+        fit: fit,
+        background:
+          format === "jpeg" ? { r: 255, g: 255, b: 255, alpha: 1 } : { r: 0, g: 0, b: 0, alpha: 0 },
+        position: "center",
+      });
 
-    // 3. Buat nama file unik
-    const filename = `${folderName}-${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
+      if (format === "png") {
+        pipeline = pipeline.png({ quality: 80, compressionLevel: 8 });
+      } else {
+        pipeline = pipeline.jpeg({ quality: 80, mozjpeg: true });
+      }
 
-    // 4. Pastikan folder tujuan ada
-    const uploadDir = path.join(__dirname, `../public/uploads/${folderName}`);
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+      const processedBuffer = await pipeline.toBuffer();
+
+      // 2. Upload Buffer ke Cloudinary menggunakan upload_stream
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: `insekta_app/${folderName}`, // Folder tujuan di Cloudinary
+          resource_type: "image",
+          // public_id opsional, jika tidak diisi Cloudinary generate acak
+          public_id: `${folderName}-${Date.now()}`,
+        },
+        (error, result) => {
+          if (error) {
+            console.error("Cloudinary Upload Error:", error);
+            return reject(error);
+          }
+          // 3. Sukses: Kembalikan URL HTTPS
+          resolve(result.secure_url);
+        }
+      );
+
+      // Akhiri stream dengan mengirimkan buffer
+      uploadStream.end(processedBuffer);
+    } catch (error) {
+      reject(new Error(`Gagal memproses gambar: ${error.message}`));
     }
-
-    // 5. Path lengkap fisik
-    const fullPath = path.join(uploadDir, filename);
-
-    // 6. Inisialisasi Sharp
-    let pipeline = sharp(fileBuffer).resize(width, width, {
-      fit: fit,
-      // Jika 'contain', background transparan (untuk PNG/WebP) atau putih (untuk JPEG)
-      background:
-        format === "jpeg" ? { r: 255, g: 255, b: 255, alpha: 1 } : { r: 0, g: 0, b: 0, alpha: 0 },
-      position: "center",
-    });
-
-    // 7. Konfigurasi Format Output
-    if (format === "png") {
-      // PNG: Lossless, support transparan
-      pipeline = pipeline.png({ quality: 80, compressionLevel: 8 });
-    } else if (format === "webp") {
-      // WebP: Modern, support transparan, ukuran kecil
-      pipeline = pipeline.webp({ quality: 80 });
-    } else {
-      // JPEG: Default untuk foto orang (Team/User)
-      pipeline = pipeline.jpeg({ quality: 80, mozjpeg: true });
-    }
-
-    // 8. Simpan File
-    await pipeline.toFile(fullPath);
-
-    // 9. Kembalikan URL publik
-    return `/uploads/${folderName}/${filename}`;
-  } catch (error) {
-    throw new Error(`Gagal memproses gambar: ${error.message}`);
-  }
+  });
 };
 
-// Helper untuk menghapus file (Cleanup)
-export const deleteImage = (relativePath) => {
-  if (!relativePath) return;
+/**
+ * Menghapus file dari Cloudinary berdasarkan URL
+ * @param {String} imageUrl - URL lengkap gambar dari database
+ */
+export const deleteImage = async (imageUrl) => {
+  if (!imageUrl) return;
+
   try {
-    const fullPath = path.join(__dirname, "../public", relativePath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
+    // URL Cloudinary contoh:
+    // https://res.cloudinary.com/cloudname/image/upload/v1234/insekta_app/teams/teams-123.jpg
+
+    // Kita perlu mengambil "Public ID".
+    // Public ID dari contoh di atas adalah: "insekta_app/teams/teams-123"
+
+    // Regex untuk mengambil string setelah '/upload/v.../' dan sebelum format file (misal .jpg)
+    const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
+    const match = imageUrl.match(regex);
+
+    if (match && match[1]) {
+      const publicId = match[1];
+      await cloudinary.uploader.destroy(publicId);
+      console.log(`Berhasil hapus gambar Cloudinary: ${publicId}`);
     }
   } catch (error) {
-    console.error("Gagal hapus file:", error.message);
+    console.error("Gagal hapus file Cloudinary:", error.message);
   }
 };

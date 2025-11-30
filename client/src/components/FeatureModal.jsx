@@ -91,8 +91,8 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
     const file = e.target.files[0];
     if (file) {
       const validTypes = ["image/jpeg", "image/png", "image/webp"];
-      if (!validTypes.includes(file.type)) return alert("Format harus PNG, JPG, WEBP.");
-      if (file.size > 2 * 1024 * 1024) return alert("Maksimal 2MB.");
+      if (!validTypes.includes(file.type)) return toast.error("Format harus PNG, JPG, WEBP.");
+      if (file.size > 2 * 1024 * 1024) return toast.error("Maksimal 2MB.");
 
       setIconFile(file);
       setIconPreview(URL.createObjectURL(file));
@@ -160,17 +160,17 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
     const userIds = Object.keys(userConfigs);
 
     // Validasi Global
-    if (!title) return alert("Judul menu wajib diisi.");
-    if (userIds.length === 0) return alert("Pilih minimal satu client.");
+    if (!title) return toast.error("Judul menu wajib diisi.");
+    if (userIds.length === 0) return toast.error("Pilih minimal satu client.");
 
     // Validasi Custom Config
     for (let uid of userIds) {
       const conf = userConfigs[uid];
       if (conf.isCustom) {
         if (conf.type === "single" && !conf.url)
-          return alert(`URL Custom untuk client ID ${uid} masih kosong!`);
+          return toast.error(`URL Custom untuk client ID ${uid} masih kosong!`);
         if (conf.type === "folder" && conf.subMenus.length === 0)
-          return alert(`Folder Custom untuk client ID ${uid} kosong!`);
+          return toast.error(`Folder Custom untuk client ID ${uid} kosong!`);
       }
     }
 

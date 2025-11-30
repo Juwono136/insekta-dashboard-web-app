@@ -93,7 +93,7 @@ export const registerUser = async (req, res) => {
     }
 
     // 5. Generate Avatar Random (Dicebear)
-    const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name.replace(/\s/g, "")}`;
+    const avatar = `https://api.dicebear.com/9.x/glass/svg?seed=${name.replace(/\s/g, "")}`;
 
     // 6. Create User
     const user = await User.create({
