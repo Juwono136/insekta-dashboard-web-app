@@ -11,12 +11,14 @@ export default defineConfig({
         target: "http://localhost:5000",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
       // 2. Teruskan request Gambar/File Static
       "/uploads": {
         target: "http://localhost:5000",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
     },
   },
