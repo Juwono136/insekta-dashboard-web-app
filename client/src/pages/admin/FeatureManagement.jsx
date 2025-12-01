@@ -218,6 +218,7 @@ const FeatureManagement = () => {
         onSubmit={handleSave}
         initialData={selectedFeature}
         companyList={companyList}
+        isSubmitting={isSubmitting}
       />
 
       {modalType === "confirm-delete" && (

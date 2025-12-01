@@ -13,7 +13,7 @@ import ConfirmationAlert from "./feature-forms/ConfirmationAlert";
 import userService from "../services/userService";
 import { getImageUrl } from "../utils/imageUrl";
 
-const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
+const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData, isSubmitting }) => {
   const [title, setTitle] = useState("");
   const [iconFile, setIconFile] = useState(null);
   const [iconPreview, setIconPreview] = useState("");
@@ -185,6 +185,7 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
           </h3>
           <button
             onClick={onClose}
+            disabled={isSubmitting}
             className="btn btn-sm btn-circle btn-ghost text-gray-400 hover:text-gray-600"
           >
             <FiX size={20} />
@@ -220,15 +221,16 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-          <button onClick={onClose} className="btn btn-ghost text-gray-500">
+          <button onClick={onClose} disabled={isSubmitting} className="btn btn-ghost text-gray-500">
             Batal
           </button>
           <button
             form="featureForm"
             type="submit"
+            disabled={isSubmitting}
             className="btn bg-[#093050] hover:bg-blue-900 text-white px-8 shadow-lg"
           >
-            {type === "create" ? "Simpan Menu" : "Simpan Perubahan"}
+            {isSubmitting ? <span className="loading loading-spinner loading-xs"></span> : "Simpan"}
           </button>
         </div>
 
