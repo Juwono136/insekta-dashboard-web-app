@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
+// assets
+import { FiLock, FiMail, FiEye, FiEyeOff } from "react-icons/fi";
+import LogoInsektaWhite from "../assets/logo-insekta-white.png";
+
+// components
+import PageLoader from "../components/PageLoader";
+
+// features
 import { setCredentials } from "../redux/slices/authSlice";
 import authService from "../services/authService";
-import toast from "react-hot-toast";
-import { FiLock, FiMail, FiEye, FiEyeOff } from "react-icons/fi";
-import PageLoader from "../components/PageLoader";
-import LogoInsektaWhite from "../assets/logo-insekta-white.png";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -49,12 +55,11 @@ const Login = () => {
   if (isLoading) return <PageLoader />;
 
   return (
-    // Background Utama: Mobile Gradient (Biru Tua ke Gelap), Desktop Abu-abu
-    <div className="min-h-screen flex flex-col lg:flex-row bg-linear-to-br from-blue-800 to-blue-950 lg:from-gray-100 lg:to-gray-100">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-linear-to-br from-[#093050] to-blue-800 lg:from-gray-100 lg:to-gray-100">
       {/* --- BAGIAN KIRI (BRANDING DESKTOP) --- */}
-      <div className="hidden lg:flex lg:w-1/2 bg-blue-800 relative items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#093050] relative items-center justify-center overflow-hidden">
         {/* Overlay Gradient Biru */}
-        <div className="absolute inset-0 bg-linear-to-br from-blue-900 to-blue-800 opacity-90"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-blue-900 to-[#093050] opacity-90"></div>
 
         {/* Dekorasi Background */}
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-orange-500 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
@@ -95,17 +100,16 @@ const Login = () => {
                     Email
                   </span>
                 </label>
-                {/* 'group' di sini adalah class bawaan Tailwind untuk parent-child interaction */}
+
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                    <FiMail className="text-gray-400 text-lg group-focus-within:text-blue-800 transition-colors" />
+                    <FiMail className="text-gray-400 text-lg group-focus-within:text-[#093050] transition-colors" />
                   </div>
                   <input
                     type="email"
                     name="email"
                     placeholder="Masukkan email anda"
-                    // Ring dan Border menggunakan warna Biru Tua (blue-800)
-                    className="input input-bordered w-full pl-10 bg-gray-50 focus:bg-white focus:border-blue-800 focus:ring-2 focus:ring-blue-800/20 transition-all text-gray-800 rounded-lg"
+                    className="input input-bordered w-full pl-10 bg-gray-50 focus:bg-white focus:border-[#093050] focus:ring-2 focus:ring-[#093050]/20 transition-all text-gray-800 rounded-lg"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -122,22 +126,22 @@ const Login = () => {
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                    <FiLock className="text-gray-400 text-lg group-focus-within:text-blue-800 transition-colors" />
+                    <FiLock className="text-gray-400 text-lg group-focus-within:text-[#093050] transition-colors" />
                   </div>
                   <input
-                    type={showPassword ? "text" : "password"} // Toggle tipe input
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="••••••••"
-                    className="input input-bordered w-full pl-10 pr-10 bg-gray-50 focus:bg-white focus:border-blue-800 focus:ring-2 focus:ring-blue-800/20 transition-all text-gray-800 rounded-lg"
+                    className="input input-bordered w-full pl-10 pr-10 bg-gray-50 focus:bg-white focus:border-[#093050] focus:ring-2 focus:ring-[#093050]/20 transition-all text-gray-800 rounded-lg"
                     value={formData.password}
                     onChange={handleChange}
                     required
                   />
 
                   <button
-                    type="button" // Penting: type button agar tidak submit form
+                    type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center z-10 cursor-pointer text-gray-400 hover:text-blue-800 transition-colors focus:outline-none"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center z-10 cursor-pointer text-gray-400 hover:text-[#093050] transition-colors focus:outline-none"
                   >
                     {showPassword ? (
                       <FiEyeOff className="text-lg" />
@@ -147,20 +151,18 @@ const Login = () => {
                   </button>
                 </div>
                 <label className="label justify-end mt-2">
-                  {/* Link warna Orange */}
                   <Link
                     to="/forgot-password"
-                    className="label-text-alt font-medium text-orange-500 hover:text-orange-700 transition"
+                    className="label-text-alt font-medium text-orange-600 hover:text-orange-700 transition"
                   >
                     Lupa Password?
                   </Link>
                 </label>
               </div>
 
-              {/* Tombol Submit Warna Biru Tua */}
               <button
                 type="submit"
-                className="btn bg-blue-800 hover:bg-blue-900 text-white border-none w-full text-base h-12 shadow-lg shadow-blue-800/30 mt-4 rounded-lg"
+                className="btn bg-[#093050] hover:bg-blue-900 text-white border-none w-full text-base h-12 shadow-lg shadow-[#093050]/30 mt-4 rounded-lg"
                 disabled={isLoading}
               >
                 {isLoading ? "Memuat..." : "Login"}

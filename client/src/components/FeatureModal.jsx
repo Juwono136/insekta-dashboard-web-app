@@ -1,35 +1,33 @@
 import { useState, useEffect } from "react";
-import { FiPlus, FiEdit3, FiX } from "react-icons/fi";
-import { getImageUrl } from "../utils/imageUrl";
-import userService from "../services/userService";
+import toast from "react-hot-toast";
 
-// Import Sub-Komponen Modular
+// assets
+import { FiPlus, FiEdit3, FiX } from "react-icons/fi";
+
+// components
 import GlobalInfoForm from "./feature-forms/GlobalInfoForm";
 import ClientAccessPanel from "./feature-forms/ClientAccessPanel";
 import ConfirmationAlert from "./feature-forms/ConfirmationAlert";
-import toast from "react-hot-toast";
+
+// features
+import userService from "../services/userService";
+import { getImageUrl } from "../utils/imageUrl";
 
 const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
   const [title, setTitle] = useState("");
   const [iconFile, setIconFile] = useState(null);
   const [iconPreview, setIconPreview] = useState("");
 
-  // State Konfigurasi Default (General)
   const [defaultConfig, setDefaultConfig] = useState({ type: "single", url: "", subMenus: [] });
 
-  // State Konfigurasi User (Map: userId -> config)
   const [userConfigs, setUserConfigs] = useState({});
 
-  // Data Client
   const [allClients, setAllClients] = useState([]);
 
-  // State Konfirmasi (Safety)
   const [confirmState, setConfirmState] = useState(null);
 
-  // --- INIT DATA ---
   useEffect(() => {
     if (isOpen) {
-      // 1. Fetch Data Client
       const fetchClients = async () => {
         try {
           const res = await userService.getUsers({ role: "client", limit: 1000 });
@@ -40,7 +38,6 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
       };
       fetchClients();
 
-      // 2. Set Form Data (Edit vs Create)
       if (initialData) {
         setTitle(initialData.title);
         setIconPreview(getImageUrl(initialData.icon));
@@ -56,12 +53,8 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
         const configMap = {};
         if (initialData.assignedTo && Array.isArray(initialData.assignedTo)) {
           initialData.assignedTo.forEach((item) => {
-            // [PERBAIKAN BUG CRITICAL DISINI]
-            // Cek jika user bernilai null (karena user sudah dihapus di User Management)
-            // Jika null, kita skip agar tidak error reading '_id'
             if (!item.user) return;
 
-            // Handle populate user object vs string ID
             const uid = typeof item.user === "object" ? item.user._id : item.user;
 
             configMap[uid] = {
@@ -75,7 +68,6 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
         }
         setUserConfigs(configMap);
       } else {
-        // Reset Form (Create Mode)
         setTitle("");
         setIconFile(null);
         setIconPreview("");
@@ -84,8 +76,6 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
       }
     }
   }, [initialData, isOpen]);
-
-  // --- HANDLERS ---
 
   const handleIconChange = (e) => {
     const file = e.target.files[0];
@@ -99,45 +89,36 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
     }
   };
 
-  // Toggle User Checkbox
   const toggleUser = (user) => {
     setUserConfigs((prev) => {
       const newConfigs = { ...prev };
       if (newConfigs[user._id]) {
-        // Uncheck: Hapus dari list
         delete newConfigs[user._id];
       } else {
-        // Check: Tambah dengan config awal (Default/Inherit)
         newConfigs[user._id] = {
           isCustom: false,
           companyName: user.companyName,
           type: "single",
           url: "",
-          subMenus: [], // Dummy value (krn isCustom false)
+          subMenus: [],
         };
       }
       return newConfigs;
     });
   };
 
-  // Update Config User Tertentu
   const updateUserConfig = (userId, newConfig) => {
     setUserConfigs((prev) => ({ ...prev, [userId]: { ...prev[userId], ...newConfig } }));
   };
 
-  // --- CONFIRMATION HANDLERS ---
-
-  // Request Batal Semua di satu PT
   const requestUncheckAll = (usersInCompany) => {
     setConfirmState({ type: "uncheckAll", data: usersInCompany });
   };
 
-  // Request Hapus Submenu (Custom User)
   const requestDeleteSubMenu = (userId, subMenuIndex) => {
     setConfirmState({ type: "deleteSub", data: { userId, subMenuIndex } });
   };
 
-  // Eksekusi Konfirmasi
   const executeConfirmation = () => {
     if (confirmState.type === "uncheckAll") {
       const usersToUncheck = confirmState.data;
@@ -154,16 +135,13 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
     setConfirmState(null);
   };
 
-  // --- SUBMIT FINAL ---
   const handleSubmit = (e) => {
     e.preventDefault();
     const userIds = Object.keys(userConfigs);
 
-    // Validasi Global
     if (!title) return toast.error("Judul menu wajib diisi.");
     if (userIds.length === 0) return toast.error("Pilih minimal satu client.");
 
-    // Validasi Custom Config
     for (let uid of userIds) {
       const conf = userConfigs[uid];
       if (conf.isCustom) {
@@ -174,7 +152,6 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
       }
     }
 
-    // Construct Payload
     const assignedToArray = userIds.map((uid) => ({
       user: uid,
       ...userConfigs[uid],
@@ -182,11 +159,9 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
 
     const payload = {
       title,
-      // Kirim Default Configs
       defaultType: defaultConfig.type,
       defaultUrl: defaultConfig.url,
       defaultSubMenus: JSON.stringify(defaultConfig.subMenus),
-      // Kirim User Configs
       assignedTo: JSON.stringify(assignedToArray),
     };
 
@@ -216,7 +191,7 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
           </button>
         </div>
 
-        {/* Form Body (Split View) */}
+        {/* Form Body*/}
         <form
           id="featureForm"
           onSubmit={handleSubmit}
@@ -251,7 +226,7 @@ const FeatureModal = ({ type, isOpen, onClose, onSubmit, initialData }) => {
           <button
             form="featureForm"
             type="submit"
-            className="btn bg-blue-800 hover:bg-blue-900 text-white px-8 shadow-lg"
+            className="btn bg-[#093050] hover:bg-blue-900 text-white px-8 shadow-lg"
           >
             {type === "create" ? "Simpan Menu" : "Simpan Perubahan"}
           </button>

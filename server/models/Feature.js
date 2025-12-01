@@ -4,8 +4,6 @@ const FeatureSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     icon: { type: String, required: true },
-
-    // [BARU] Default Config (General URL)
     defaultType: {
       type: String,
       enum: ["single", "folder"],

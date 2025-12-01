@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: "30d", // Token berlaku 30 hari
+    expiresIn: "1d", // Token berlaku 1 hari
   });
 
   // Simpan token di HTTP-Only Cookie (Lebih aman dari XSS Attack)
@@ -10,7 +10,7 @@ const generateToken = (res, userId) => {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development", // Gunakan https di production
     sameSite: "strict",
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 hari dalam milidetik
+    maxAge: 1 * 24 * 60 * 60 * 1000, // 1 hari dalam milidetik
   });
 };
 

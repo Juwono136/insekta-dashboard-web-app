@@ -1,19 +1,22 @@
 import { useEffect, useState, useMemo } from "react";
-import { FiUsers, FiLayers, FiActivity, FiBarChart2 } from "react-icons/fi";
-
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
 
-import userService from "../../services/userService";
-import featureService from "../../services/featureService";
-import chartService from "../../services/chartService";
+// assets
+import { FiUsers, FiLayers, FiActivity, FiBarChart2 } from "react-icons/fi";
 
+// components
 import DashboardSkeleton from "../../components/DashboardSkeleton";
 import DashboardHeader from "../../components/dashboard/DashboardHeader";
 import StatCard from "../../components/dashboard/StatCard";
 import DashboardCharts from "../../components/dashboard/DashboardCharts";
 import RecentActivityTable from "../../components/dashboard/RecentActivityTable";
+
+// features
+import userService from "../../services/userService";
+import featureService from "../../services/featureService";
+import chartService from "../../services/chartService";
 
 const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +26,6 @@ const AdminDashboard = () => {
   const [filterDate, setFilterDate] = useState("year"); // 'week', 'month', 'year'
   const [totalCharts, setTotalCharts] = useState(0);
 
-  // --- 1. LOAD DATA ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,7 +47,6 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  // --- 2. DATA PROCESSING (STATS) ---
   const stats = useMemo(() => {
     const clients = users.filter((u) => u.role === "client");
     const activeClients = clients.filter((u) => u.isActive).length;
@@ -56,12 +57,10 @@ const AdminDashboard = () => {
     };
   }, [users]);
 
-  // --- 3. DATA PROCESSING (CHART UTAMA - USER FRIENDLY) ---
   const chartData = useMemo(() => {
     const now = new Date();
     let data = [];
 
-    // Helper: Format tanggal lokal Indonesia
     const formatDate = (dateStr, formatType) => {
       const date = new Date(dateStr);
       if (formatType === "day") return date.toLocaleDateString("id-ID", { weekday: "short" }); // Sen, Sel
@@ -73,7 +72,6 @@ const AdminDashboard = () => {
     let filteredUsers = [];
 
     if (filterDate === "week") {
-      // Logic: 7 Hari Terakhir
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(now.getDate() - 7);
       filteredUsers = users.filter((u) => new Date(u.createdAt) >= sevenDaysAgo);
@@ -84,10 +82,9 @@ const AdminDashboard = () => {
         acc[day] = (acc[day] || 0) + 1;
         return acc;
       }, {});
-      // Mapping agar urutan hari benar (Opsional, simplified for now)
+      // Mapping agar urutan hari benar
       data = Object.keys(grouped).map((k) => ({ name: k, users: grouped[k] }));
     } else if (filterDate === "month") {
-      // Logic: Bulan Ini (Per Tanggal)
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
       filteredUsers = users.filter((u) => new Date(u.createdAt) >= firstDay);
 
@@ -98,7 +95,6 @@ const AdminDashboard = () => {
       }, {});
       data = Object.keys(grouped).map((k) => ({ name: k, users: grouped[k] }));
     } else {
-      // Logic: Tahun Ini (Per Bulan)
       const firstDayYear = new Date(now.getFullYear(), 0, 1);
       filteredUsers = users.filter((u) => new Date(u.createdAt) >= firstDayYear);
 
@@ -108,7 +104,6 @@ const AdminDashboard = () => {
         return acc;
       }, {});
 
-      // Pastikan urutan bulan (Jan-Des) jika data kosong di bulan tertentu
       const monthsOrder = [
         "Jan",
         "Feb",
@@ -129,7 +124,6 @@ const AdminDashboard = () => {
     return data;
   }, [users, filterDate]);
 
-  // --- 4. DATA PIE CHART ---
   const pieData = useMemo(() => {
     const active = users.filter((u) => u.isActive).length;
     const inactive = users.length - active;
@@ -139,12 +133,11 @@ const AdminDashboard = () => {
     ];
   }, [users]);
 
-  // --- 5. GENERATE PDF REPORT ---
   const generateReport = () => {
     const doc = new jsPDF();
 
     // Header
-    doc.setFillColor(0, 86, 179); // Biru Insekta
+    doc.setFillColor(0, 86, 179);
     doc.rect(0, 0, 210, 20, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
@@ -166,7 +159,7 @@ const AdminDashboard = () => {
       ["Total Fitur Menu", totalFeatures],
     ];
 
-    // PERBAIKAN 1: Gunakan autoTable(doc, options)
+    // autoTable(doc, options)
     autoTable(doc, {
       startY: 45,
       head: [["Metrik", "Jumlah"]],
@@ -185,7 +178,6 @@ const AdminDashboard = () => {
       f.assignedTo.length + " User",
     ]);
 
-    // PERBAIKAN 2: Gunakan autoTable(doc, options)
     autoTable(doc, {
       startY: doc.lastAutoTable.finalY + 20,
       head: [["Nama Menu", "Tanggal Dibuat", "Akses Client"]],
@@ -249,7 +241,7 @@ const AdminDashboard = () => {
         stats={stats}
       />
 
-      {/* RECENT ACTIVITY TABLE (Tetap sama) */}
+      {/* RECENT ACTIVITY TABLE */}
       <RecentActivityTable features={features} />
     </div>
   );

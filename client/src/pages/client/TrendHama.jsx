@@ -1,33 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+// assets
 import { FiBarChart2, FiTrendingUp, FiAlertCircle } from "react-icons/fi";
 
-// Import Redux Action
-import { fetchCharts } from "../../redux/slices/chartSlice"; // Sesuaikan path
-
-// Import Components
+// components
 import PageLoader from "../../components/PageLoader";
 import Breadcrumbs from "../../components/Breadcrumbs";
-import LazyCategorySection from "../../components/LazyCategorySection"; // Komponen Baru
-
-// Re-use Component Admin (Chart Preview & Modal)
+import LazyCategorySection from "../../components/LazyCategorySection";
 import ChartPreview from "../../components/ChartPreview";
 import ChartFullModal from "../../components/ChartFullModal";
+
+// features
+import { fetchCharts } from "../../redux/slices/chartSlice";
 
 const TrendHama = () => {
   const dispatch = useDispatch();
 
-  // Ambil Data dari Redux Store
   const { charts, isLoading, isError, message } = useSelector((state) => state.charts);
 
   const [viewChart, setViewChart] = useState(null);
 
-  // Fetch Data via Redux
   useEffect(() => {
     dispatch(fetchCharts());
   }, [dispatch]);
 
-  // Logic Grouping (Memoized)
   const groupedCharts = useMemo(() => {
     const groups = {};
     charts.forEach((chart) => {
@@ -94,18 +90,15 @@ const TrendHama = () => {
                       className="card bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer overflow-hidden rounded-2xl"
                       onClick={() => setViewChart(chart)}
                     >
-                      {/* Chart Thumbnail (Image Mode - Ringan) */}
-                      {/* Container Aspect Video agar proporsional */}
                       <div className="w-full aspect-video bg-gray-50 relative border-b border-gray-50">
                         <div className="absolute inset-0 p-0">
                           <ChartPreview
                             url={chart.embedUrl}
                             title={chart.title}
-                            interactive={false} // Mode Gambar
+                            interactive={false}
                           />
                         </div>
 
-                        {/* Hover Overlay */}
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <span className="bg-white/90 text-gray-800 px-4 py-2 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-2">
                             <FiBarChart2 /> Lihat Detail
@@ -136,7 +129,6 @@ const TrendHama = () => {
         )}
       </div>
 
-      {/* Modal Full Screen (Tetap Interactive Iframe) */}
       <ChartFullModal isOpen={!!viewChart} onClose={() => setViewChart(null)} chart={viewChart} />
     </div>
   );

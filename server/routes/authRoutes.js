@@ -10,10 +10,10 @@ import {
 const router = express.Router();
 
 router.post("/login", loginUser);
-router.post("/register", registerUser); // Kita pakai ini dulu untuk bikin akun Admin pertama
+router.post("/register", registerUser);
 router.post("/logout", logoutUser);
-router.post("/forgotpassword", forgotPassword); // User kirim email
+router.post("/forgotpassword", forgotPassword);
 
-router.put("/resetpassword/:resetToken", resetPassword); // User kirim password baru + token
+router.put("/resetpassword/:resetToken", resetPassword);
 
 export default router;

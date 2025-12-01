@@ -4,7 +4,6 @@ const ChartSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     embedUrl: { type: String, required: true },
-    // [BARU] Field Kategori
     category: { type: String, default: "General" },
     description: { type: String },
     createdBy: {

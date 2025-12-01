@@ -1,40 +1,39 @@
 import { useEffect, useState } from "react";
-import featureService from "../../services/featureService";
-import userService from "../../services/userService";
 import toast from "react-hot-toast";
+
+// assets
 import { FiPlus, FiSearch, FiLayers, FiAlertTriangle, FiFilter } from "react-icons/fi";
+
+// components
 import Breadcrumbs from "../../components/Breadcrumbs";
 import Pagination from "../../components/Pagination";
-
-// Import Komponen Modular (Pastikan file ini sudah dibuat sesuai langkah sebelumnya)
 import FeatureCard from "../../components/FeatureCard";
 import FeatureModal from "../../components/FeatureModal";
 
+// features
+import featureService from "../../services/featureService";
+import userService from "../../services/userService";
+
 const FeatureManagement = () => {
-  // --- STATE DATA ---
   const [features, setFeatures] = useState([]);
-  const [companyList, setCompanyList] = useState([]); // List perusahaan untuk filter
+  const [companyList, setCompanyList] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalData: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
-  // --- STATE FILTER ---
   const [filters, setFilters] = useState({
     search: "",
-    company: "", // Filter berdasarkan perusahaan
+    company: "",
     limit: 8,
     page: 1,
   });
 
-  // --- STATE MODAL ---
   const [modalType, setModalType] = useState(null); // 'create', 'edit', 'confirm-delete'
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- 1. FETCH DATA UTAMA ---
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Panggil 2 API sekaligus: Get Features & Get Companies List
       const [featRes, compRes] = await Promise.all([
         featureService.getAllFeatures(filters),
         userService.getCompanies(),
@@ -51,13 +50,11 @@ const FeatureManagement = () => {
     }
   };
 
-  // Refetch saat filters berubah (Debounce search automatic handled by useEffect delay logic if needed, or direct here)
   useEffect(() => {
     const timer = setTimeout(() => fetchData(), 500);
     return () => clearTimeout(timer);
   }, [filters]);
 
-  // --- 2. HANDLERS ---
   const handleFilterChange = (e) => {
     setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value, page: 1 }));
   };
@@ -66,24 +63,16 @@ const FeatureManagement = () => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  // Handler Simpan (Create / Update) dari FeatureModal
   const handleSave = async (payload, iconFile) => {
     setIsSubmitting(true);
     try {
       const submitData = new FormData();
-
-      // Masukkan data global
       submitData.append("title", payload.title);
-
-      // Masukkan konfigurasi user (Array of Objects) sebagai JSON String
-      // Payload.assignedTo ini sudah berbentuk JSON String dari FeatureModal
       submitData.append("assignedTo", payload.assignedTo);
-
       submitData.append("defaultType", payload.defaultType);
       submitData.append("defaultUrl", payload.defaultUrl);
       submitData.append("defaultSubMenus", payload.defaultSubMenus);
 
-      // Masukkan Icon jika ada
       if (iconFile) {
         submitData.append("icon", iconFile);
       }
@@ -97,7 +86,7 @@ const FeatureManagement = () => {
       }
 
       setModalType(null);
-      fetchData(); // Refresh data
+      fetchData();
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Gagal menyimpan data");
@@ -106,7 +95,6 @@ const FeatureManagement = () => {
     }
   };
 
-  // Handler Hapus
   const handleDelete = async () => {
     setIsSubmitting(true);
     try {
@@ -121,7 +109,6 @@ const FeatureManagement = () => {
     }
   };
 
-  // --- RENDER UI ---
   return (
     <div className="space-y-6 animate-fade-in pb-10">
       <Breadcrumbs />
@@ -139,7 +126,7 @@ const FeatureManagement = () => {
             setSelectedFeature(null);
             setModalType("create");
           }}
-          className="btn bg-blue-800 hover:bg-blue-900 text-white shadow-lg gap-2"
+          className="btn bg-[#093050] hover:bg-blue-900 text-white shadow-lg gap-2"
         >
           <FiPlus /> Tambah Menu Client
         </button>
@@ -224,19 +211,15 @@ const FeatureManagement = () => {
         />
       </div>
 
-      {/* --- MODALS --- */}
-
-      {/* 1. Modal Create/Edit (Komponen Terpisah) */}
       <FeatureModal
         type={modalType === "create" ? "create" : "edit"}
         isOpen={modalType === "create" || modalType === "edit"}
         onClose={() => setModalType(null)}
         onSubmit={handleSave}
         initialData={selectedFeature}
-        companyList={companyList} // Pass data perusahaan untuk filter di dalam modal (opsional jika modal fetch sendiri)
+        companyList={companyList}
       />
 
-      {/* 2. Modal Konfirmasi Hapus (Sederhana, langsung disini) */}
       {modalType === "confirm-delete" && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center transform scale-100 transition-all">

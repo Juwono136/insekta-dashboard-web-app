@@ -15,7 +15,6 @@ import {
 const DashboardCharts = ({ chartData, pieData, filterDate, stats }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* AREA CHART: USER GROWTH */}
       <div className="lg:col-span-2 card bg-white shadow-sm border border-gray-200">
         <div className="card-body p-6">
           <div className="flex justify-between items-center mb-2">
@@ -34,7 +33,6 @@ const DashboardCharts = ({ chartData, pieData, filterDate, stats }) => {
             </span>
           </div>
 
-          {/* FIX: Container Chart dengan min-width-0 dan Height Explicit */}
           <div className="h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -77,7 +75,6 @@ const DashboardCharts = ({ chartData, pieData, filterDate, stats }) => {
         </div>
       </div>
 
-      {/* PIE CHART: STATUS USER */}
       <div className="card bg-white shadow-sm border border-gray-200">
         <div className="card-body p-6 flex flex-col justify-between">
           <div>

@@ -8,16 +8,12 @@ const isValidPhone = (phone) => {
   return phoneRegex.test(phone);
 };
 
-// --- CONTROLLERS ---
 // @desc    Get All Teams
 export const getTeams = async (req, res) => {
   try {
     const { search, page = 1, limit = 10 } = req.query;
     const query = {};
 
-    // [LOGIC BARU] Filter berdasarkan Role
-    // Jika ADMIN: Bisa lihat semua (bisa filter by search)
-    // Jika CLIENT: Hanya lihat tim yang assignedClients-nya mengandung ID saya
     if (req.user.role !== "admin") {
       query.assignedClients = req.user._id;
     }
@@ -63,12 +59,10 @@ export const createTeam = async (req, res) => {
   try {
     const { name, role, phone, area, outlets, assignedClients } = req.body;
 
-    // 1. Validasi Input Wajib (HAPUS CHECK REQ.FILE)
     if (!name || !role || !phone || !area) {
       return res.status(400).json({ message: "Nama, Jabatan, No HP, dan Area wajib diisi." });
     }
 
-    // 2. Validasi Nomor HP
     const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,11}$/;
     if (!phoneRegex.test(phone)) {
       return res.status(400).json({ message: "Format Nomor HP tidak valid." });
@@ -83,7 +77,6 @@ export const createTeam = async (req, res) => {
       }
     }
 
-    // 3. Proses Upload Foto (Hanya jika ada file)
     if (req.file) {
       uploadedPhotoPath = await saveImage(req.file.buffer, "teams", 400, {
         format: "jpeg",
@@ -91,7 +84,6 @@ export const createTeam = async (req, res) => {
       });
     }
 
-    // 4. Simpan ke DB (Photo bisa string kosong)
     const team = await Team.create({
       name,
       role,

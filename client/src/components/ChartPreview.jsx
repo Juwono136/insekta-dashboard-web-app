@@ -4,24 +4,19 @@ import { FiBarChart2 } from "react-icons/fi";
 const ChartPreview = ({ url, title, interactive = true, refreshKey = 0 }) => {
   const [imgError, setImgError] = useState(false);
 
-  // --- SMART URL GENERATOR ---
   const { displayUrl, isImageMode } = useMemo(() => {
     if (!url) return { displayUrl: "", isImageMode: false };
 
     try {
       let newUrl = url;
-      // Bersihkan parameter lama
       newUrl = newUrl
         .replace("&widget=true", "")
         .replace("&headers=false", "")
         .replace("&chrome=false", "");
 
-      // [PENTING] TIMESTAMP CACHE BUSTER
-      // Ini yang membuat gambar SELALU UPDATE sesuai data terbaru di Sheet
       const separator = newUrl.includes("?") ? "&" : "?";
       const timestamp = `update=${refreshKey || Date.now()}`;
 
-      // MODE GRID (THUMBNAIL) -> Paksa jadi GAMBAR
       if (!interactive) {
         if (newUrl.includes("format=interactive")) {
           newUrl = newUrl.replace("format=interactive", "format=image");
@@ -30,14 +25,10 @@ const ChartPreview = ({ url, title, interactive = true, refreshKey = 0 }) => {
         }
 
         return {
-          // URL Gambar + Timestamp (Agar tidak dicache browser)
           displayUrl: `${newUrl}&${timestamp}`,
           isImageMode: true,
         };
-      }
-
-      // MODE INTERACTIVE (MODAL) -> Paksa jadi IFRAME
-      else {
+      } else {
         if (newUrl.includes("format=image")) {
           newUrl = newUrl.replace("format=image", "format=interactive");
         }
@@ -65,8 +56,6 @@ const ChartPreview = ({ url, title, interactive = true, refreshKey = 0 }) => {
   return (
     <div className="w-full h-full bg-white overflow-hidden relative flex items-center justify-center">
       {isImageMode && !imgError ? (
-        // TAMPILAN GAMBAR (RESPONSIF TOTAL)
-        // object-contain membuat gambar mengecil pas sesuai kotak kartu tanpa terpotong
         <img
           src={displayUrl}
           alt={title}
@@ -75,9 +64,8 @@ const ChartPreview = ({ url, title, interactive = true, refreshKey = 0 }) => {
           loading="lazy"
         />
       ) : (
-        // TAMPILAN IFRAME (Fallback / Full Screen)
         <iframe
-          key={displayUrl} // Key berubah = Iframe reload
+          key={displayUrl}
           src={displayUrl}
           title={title}
           className="w-full h-full border-0"
@@ -86,7 +74,6 @@ const ChartPreview = ({ url, title, interactive = true, refreshKey = 0 }) => {
         />
       )}
 
-      {/* Overlay agar kartu bisa diklik di grid */}
       {!interactive && <div className="absolute inset-0 z-10 bg-transparent cursor-pointer"></div>}
     </div>
   );

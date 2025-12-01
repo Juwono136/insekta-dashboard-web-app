@@ -1,4 +1,7 @@
+// assets
 import { FiX, FiExternalLink, FiFileText } from "react-icons/fi";
+
+// features
 import { getEmbedUrl } from "../../utils/urlHelper";
 
 const FilePreviewModal = ({ isOpen, onClose, title, url }) => {
@@ -9,7 +12,6 @@ const FilePreviewModal = ({ isOpen, onClose, title, url }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
       <div className="bg-white w-full max-w-5xl h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden relative">
-        {/* Header Modal */}
         <div className="flex justify-between items-center px-6 py-4 bg-white border-b border-gray-100 z-10">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
@@ -24,7 +26,6 @@ const FilePreviewModal = ({ isOpen, onClose, title, url }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Tombol Buka Langsung (Action Button) */}
             <a
               href={url}
               target="_blank"
@@ -44,7 +45,6 @@ const FilePreviewModal = ({ isOpen, onClose, title, url }) => {
 
         {/* Iframe Area */}
         <div className="flex-1 bg-gray-100 relative">
-          {/* Loading Placeholder (di belakang iframe) */}
           <div className="absolute inset-0 flex items-center justify-center text-gray-400">
             <span className="loading loading-spinner loading-lg"></span>
           </div>
@@ -57,7 +57,6 @@ const FilePreviewModal = ({ isOpen, onClose, title, url }) => {
           ></iframe>
         </div>
 
-        {/* Footer (Mobile Only Link) */}
         <div className="p-4 bg-white border-t border-gray-100 sm:hidden text-center">
           <a
             href={url}

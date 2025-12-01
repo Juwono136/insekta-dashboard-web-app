@@ -1,3 +1,4 @@
+// assets
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -16,13 +17,12 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         >
           <FiChevronLeft />
         </button>
-        {/* Tampilkan Page Number Sederhana */}
         {[...Array(totalPages)].map((_, i) => (
           <button
             key={i}
             className={`join-item btn btn-sm ${
               currentPage === i + 1
-                ? "btn-active bg-blue-800 text-white border-blue-800"
+                ? "btn-active bg-[#093050] text-white border-blue-800"
                 : "bg-white"
             }`}
             onClick={() => onPageChange(i + 1)}

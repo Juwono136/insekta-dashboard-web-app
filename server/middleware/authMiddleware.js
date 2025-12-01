@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// 1. Middleware untuk memproteksi route (Harus Login)
 const protect = async (req, res, next) => {
   let token;
 
@@ -28,7 +27,6 @@ const protect = async (req, res, next) => {
   }
 };
 
-// 2. Middleware khusus Admin
 const admin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();

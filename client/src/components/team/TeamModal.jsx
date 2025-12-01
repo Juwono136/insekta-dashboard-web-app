@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+
+// assets
 import {
   FiX,
   FiUploadCloud,
@@ -13,12 +15,12 @@ import {
   FiMapPin,
   FiChevronRight,
 } from "react-icons/fi";
+
+// features
 import { getImageUrl } from "../../utils/imageUrl";
 import userService from "../../services/userService";
-import { useMemo } from "react";
 
 const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) => {
-  // --- FORM STATE ---
   const [formData, setFormData] = useState({
     name: "",
     role: "Teknisi",
@@ -30,19 +32,15 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
   const [photoPreview, setPhotoPreview] = useState("");
   const [formError, setFormError] = useState(null);
 
-  // --- CLIENT ACCESS STATE ---
   const [allClients, setAllClients] = useState([]);
   const [selectedClients, setSelectedClients] = useState([]);
   const [clientSearch, setClientSearch] = useState("");
 
-  // [BARU] State untuk Toggle Dropdown Perusahaan
   const [expandedGroups, setExpandedGroups] = useState({});
 
-  // --- UI STATE ---
   const [showAreaDropdown, setShowAreaDropdown] = useState(false);
   const areaInputRef = useRef(null);
 
-  // 1. Fetch Clients
   useEffect(() => {
     if (isOpen) {
       const loadClients = async () => {
@@ -57,7 +55,6 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
     }
   }, [isOpen]);
 
-  // 2. Init Data
   useEffect(() => {
     if (isOpen) {
       setFormError(null);
@@ -86,7 +83,6 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
     }
   }, [isOpen, initialData, type]);
 
-  // --- LOGIC GROUPING ---
   const groupedClients = useMemo(() => {
     const groups = {};
     const filtered = allClients.filter(
@@ -109,10 +105,8 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
       }, {});
   }, [allClients, clientSearch]);
 
-  // [BARU] Auto Expand saat Search
   useEffect(() => {
     if (clientSearch) {
-      // Buka semua grup yang ada isinya jika sedang mencari
       const allKeys = Object.keys(groupedClients).reduce((acc, key) => {
         acc[key] = true;
         return acc;
@@ -141,7 +135,7 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
     }
   };
 
-  // [BARU] Toggle Group Expansion (Dropdown)
+  // Toggle Group Expansion (Dropdown)
   const toggleExpand = (company) => {
     setExpandedGroups((prev) => ({
       ...prev,
@@ -149,7 +143,6 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
     }));
   };
 
-  // --- VALIDATION & SUBMIT ---
   const handleSubmit = (e) => {
     e.preventDefault();
     if (
@@ -266,7 +259,7 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
                 </div>
               </div>
 
-              {/* Inputs Lain (Role, Phone, Area, Outlet) - Sama Persis */}
+              {/* Inputs Lain (Role, Phone, Area, Outlet) */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label text-xs font-bold text-gray-500">
@@ -351,7 +344,7 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
             </form>
           </div>
 
-          {/* KOLOM KANAN: Akses Client (Grouped with Dropdown) */}
+          {/* KOLOM KANAN: Akses Client */}
           <div className="lg:w-80 bg-gray-50 flex flex-col h-full overflow-hidden border-t lg:border-t-0">
             {/* Header Kanan */}
             <div className="p-4 bg-white border-b border-gray-100 shadow-sm z-10">
@@ -375,7 +368,7 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
               </div>
             </div>
 
-            {/* List Group (Tree View Style) */}
+            {/* List Group */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
               {Object.keys(groupedClients).length === 0 ? (
                 <div className="text-center py-10">
@@ -398,7 +391,6 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
                       key={company}
                       className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-300"
                     >
-                      {/* Group Header (Klik Text -> Expand, Klik Checkbox -> Select All) */}
                       <div className="flex items-center px-3 py-2.5 bg-gray-50/50 hover:bg-gray-100 transition-colors select-none">
                         {/* Toggle Expand Icon */}
                         <button
@@ -489,7 +481,7 @@ const TeamModal = ({ isOpen, type, onClose, onSubmit, initialData, areaList }) =
           <button
             form="teamForm"
             type="submit"
-            className="btn bg-blue-800 hover:bg-blue-900 text-white px-6 shadow-lg"
+            className="btn bg-[#093050] hover:bg-blue-900 text-white px-6 shadow-lg"
           >
             Simpan Data
           </button>

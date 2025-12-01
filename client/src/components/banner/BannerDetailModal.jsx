@@ -1,73 +1,83 @@
-import { FiX, FiCalendar, FiInfo, FiExternalLink } from "react-icons/fi";
+import { FiX, FiCalendar, FiExternalLink, FiGift, FiAlertCircle } from "react-icons/fi";
+import { BsMegaphone } from "react-icons/bs";
+import { getImageUrl } from "../../utils/imageUrl";
 
-const BannerDetailModal = ({ isOpen, onClose, banner, style }) => {
+const BannerDetailModal = ({ isOpen, onClose, banner }) => {
   if (!isOpen || !banner) return null;
+
+  // Helper Badge untuk di dalam Modal
+  const getBadgeIcon = (type) => {
+    if (type === "promo") return <FiGift />;
+    if (type === "warning") return <FiAlertCircle />;
+    return <BsMegaphone />;
+  };
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fade-in">
-      {/* Backdrop Blur */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
 
       {/* Modal Content */}
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative z-10 flex flex-col max-h-[85vh]">
-        {/* Header Berwarna (Sesuai Tipe Banner) */}
-        <div className={`${style.bg} p-6 text-white relative shrink-0`}>
-          {/* Dekorasi */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10"></div>
+      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative z-10 flex flex-col max-h-[90vh] animate-scale-up">
+        {/* HEADER: GAMBAR FULL */}
+        <div className="relative h-48 sm:h-56 shrink-0 bg-gray-200">
+          {/* Gambar Background */}
+          <img
+            src={getImageUrl(banner.image)}
+            alt={banner.title}
+            className="w-full h-full object-cover"
+          />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent"></div>
 
-          <div className="relative z-10">
-            <div className="flex justify-between items-start mb-4">
-              <div className="bg-white/20 backdrop-blur-md p-2 rounded-xl shadow-inner">
-                {style.icon}
-              </div>
-              <button
-                onClick={onClose}
-                className="btn btn-sm btn-circle btn-ghost bg-white/20 hover:bg-white/40 text-white border-none"
-              >
-                <FiX size={20} />
-              </button>
-            </div>
-            <h3 className="font-bold text-2xl leading-tight">{banner.title}</h3>
-            <div className="flex items-center gap-2 mt-3 text-blue-50 text-xs font-medium">
-              <span className="bg-black/10 px-2 py-1 rounded-md uppercase tracking-wider">
-                {style.label}
-              </span>
-              <span className="flex items-center gap-1">
-                <FiCalendar /> {new Date(banner.createdAt).toLocaleDateString("id-ID")}
-              </span>
-            </div>
+          {/* Tombol Close */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 btn btn-sm btn-circle bg-black/30 hover:bg-black/50 text-white border-none backdrop-blur-md z-20"
+          >
+            <FiX size={18} />
+          </button>
 
-            <div className="flex my-2">
-              {banner.linkUrl && (
-                <a
-                  href={banner.linkUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()} // PENTING: Agar tidak trigger modal
-                  className="pointer-events-auto flex items-center gap-1 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 px-3 py-1 rounded-full text-[10px] font-bold transition-colors shadow-sm"
-                >
-                  Buka Link <FiExternalLink />
-                </a>
-              )}
+          {/* Judul & Info di atas Gambar */}
+          <div className="absolute bottom-0 left-0 w-full p-6 text-white z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-white/20 backdrop-blur-md border border-white/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1.5">
+                {getBadgeIcon(banner.type)} {banner.type}
+              </span>
+              <span className="flex items-center gap-1 text-[10px] opacity-80 font-medium">
+                <FiCalendar size={10} />{" "}
+                {new Date(banner.createdAt).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
             </div>
+            <h3 className="font-bold text-xl sm:text-2xl leading-tight text-shadow-sm">
+              {banner.title}
+            </h3>
           </div>
         </div>
 
-        {/* Body Content (Scrollable) */}
+        {/* BODY: KONTEN */}
         <div className="p-6 overflow-y-auto custom-scrollbar">
           <p className="text-gray-700 text-sm md:text-base leading-relaxed whitespace-pre-line">
             {banner.content}
           </p>
-        </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50 text-center shrink-0">
-          <button
-            onClick={onClose}
-            className="btn btn-block bg-blue-800 hover:bg-blue-900 text-white rounded-xl"
-          >
-            Tutup
-          </button>
+          {/* Link URL Action di Dalam Modal */}
+          {banner.linkUrl && (
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <a
+                href={banner.linkUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 w-full bg-[#093050] hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-100"
+              >
+                <FiExternalLink /> Buka Tautan Terkait
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

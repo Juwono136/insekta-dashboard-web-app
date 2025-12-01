@@ -1,3 +1,4 @@
+// components
 import ClientFooter from "../../components/ClientFooter";
 import Navbar from "../../components/Navbar";
 

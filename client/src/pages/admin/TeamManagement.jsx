@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import teamService from "../../services/teamService";
 import toast from "react-hot-toast";
-import { FiPlus, FiSearch, FiUsers, FiAlertTriangle } from "react-icons/fi";
-import Breadcrumbs from "../../components/Breadcrumbs";
 
-// Import Modular Components
+// assets
+import { FiPlus, FiSearch, FiUsers, FiAlertTriangle } from "react-icons/fi";
+
+// components
+import Breadcrumbs from "../../components/Breadcrumbs";
 import TeamTable from "../../components/team/TeamTable";
 import TeamModal from "../../components/team/TeamModal";
 
+// features
+import teamService from "../../services/teamService";
+
 const TeamManagement = () => {
-  // --- STATE ---
   const [teams, setTeams] = useState([]);
   const [areaList, setAreaList] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, total: 0 });
@@ -21,7 +24,6 @@ const TeamManagement = () => {
   const [modalType, setModalType] = useState(null); // 'create' | 'edit' | 'delete'
   const [selectedTeam, setSelectedTeam] = useState(null);
 
-  // --- FETCH DATA ---
   const fetchTeams = async () => {
     setIsLoading(true);
     try {
@@ -57,9 +59,6 @@ const TeamManagement = () => {
     fetchAreas();
   }, []);
 
-  // --- ACTION HANDLERS ---
-
-  // Menangani Save (Create/Edit) dari Modal
   const handleSave = async (formDataRaw, photoFile, selectedClients) => {
     setIsSubmitting(true);
     try {
@@ -77,9 +76,8 @@ const TeamManagement = () => {
       }
       setModalType(null);
 
-      // REFRESH DATA & AREA (PENTING!)
       fetchTeams();
-      fetchAreas(); // Update list area dropdown (jika ada area baru/hapus)
+      fetchAreas();
     } catch (error) {
       toast.error(error.response?.data?.message || "Gagal menyimpan");
     } finally {
@@ -94,9 +92,8 @@ const TeamManagement = () => {
       toast.success("Nama Tim dihapus");
       setModalType(null);
 
-      // REFRESH DATA & AREA (PENTING!)
       fetchTeams();
-      fetchAreas(); // Update list area dropdown (jika area tersebut hilang)
+      fetchAreas();
     } catch (error) {
       toast.error("Gagal hapus");
     } finally {
@@ -109,7 +106,7 @@ const TeamManagement = () => {
       <Breadcrumbs />
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Team Management</h1>
           <p className="text-gray-500 text-sm mt-1">Kelola teknisi, area kerja, dan data outlet.</p>
@@ -119,7 +116,7 @@ const TeamManagement = () => {
             setSelectedTeam(null);
             setModalType("create");
           }}
-          className="btn bg-blue-800 hover:bg-blue-900 text-white gap-2 shadow-lg w-full md:w-auto"
+          className="btn bg-[#093050] hover:bg-blue-900 text-white gap-2 shadow-lg w-full md:w-auto"
         >
           <FiPlus /> Tambah Anggota
         </button>
@@ -174,7 +171,7 @@ const TeamManagement = () => {
         areaList={areaList}
       />
 
-      {/* Delete Confirmation (Simple Inline Modal) */}
+      {/* Delete Confirmation */}
       {modalType === "delete" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm text-center">

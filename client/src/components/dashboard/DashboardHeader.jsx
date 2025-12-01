@@ -1,3 +1,4 @@
+// assets
 import { FiCalendar, FiDownload } from "react-icons/fi";
 
 const DashboardHeader = ({ setFilterDate, filterDate, generateReport }) => {
@@ -6,12 +7,11 @@ const DashboardHeader = ({ setFilterDate, filterDate, generateReport }) => {
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
         <p className="text-gray-500 text-sm mt-1">
-          Pantau performa dan aktivitas aplikasi Insekta.
+          Pantau performa dan aktivitas dashboard Insekta.
         </p>
       </div>
 
       <div className="flex gap-3">
-        {/* FILTER DATE (IMPROVED UI) */}
         <div className="relative">
           <div className="absolute z-10 inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <FiCalendar className="text-gray-500" />
@@ -30,7 +30,7 @@ const DashboardHeader = ({ setFilterDate, filterDate, generateReport }) => {
         {/* REPORT BUTTON */}
         <button
           onClick={generateReport}
-          className="btn btn-sm bg-blue-800 hover:bg-blue-900 text-white border-none gap-2 shadow-md transition-transform active:scale-95"
+          className="btn btn-sm bg-[#093050] hover:bg-blue-900 text-white border-none gap-2 shadow-md transition-transform active:scale-95"
         >
           <FiDownload /> Download Report
         </button>

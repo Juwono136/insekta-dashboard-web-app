@@ -1,10 +1,16 @@
 import { useEffect, useState, useMemo } from "react";
-import teamService from "../../services/teamService";
-import PageLoader from "../../components/PageLoader";
+
+// assets
 import { FiMapPin, FiCheckCircle, FiUser } from "react-icons/fi";
 import { FaWhatsapp, FaUsers } from "react-icons/fa";
-import { getImageUrl } from "../../utils/imageUrl";
+
+// components
+import PageLoader from "../../components/PageLoader";
 import Breadcrumbs from "../../components/Breadcrumbs";
+
+// features
+import teamService from "../../services/teamService";
+import { getImageUrl } from "../../utils/imageUrl";
 
 const TimInsekta = () => {
   const [teams, setTeams] = useState([]);
@@ -13,7 +19,6 @@ const TimInsekta = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Ambil semua data (limit besar) untuk ditampilkan di satu halaman
         const res = await teamService.getTeams({ limit: 100 });
         setTeams(res.data);
       } catch (error) {
@@ -25,7 +30,6 @@ const TimInsekta = () => {
     fetchData();
   }, []);
 
-  // Grouping Data by Area
   const groupedTeams = useMemo(() => {
     const groups = {};
     teams.forEach((team) => {
@@ -74,7 +78,6 @@ const TimInsekta = () => {
                   </h3>
                 </div>
 
-                {/* Grid Card (Design mirip ID Card) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {members.map((member) => (
                     <div

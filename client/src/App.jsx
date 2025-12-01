@@ -3,12 +3,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import "./App.css";
 
-// Pages
+// components
+import AdminLayout from "./layouts/AdminLayout";
+import PrivateRoute from "./components/PrivateRoute";
+import PageLoader from "./components/PageLoader";
+
+// pages
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
-import PrivateRoute from "./components/PrivateRoute";
-import AdminLayout from "./layouts/AdminLayout";
-import PageLoader from "./components/PageLoader";
 import AdminCharts from "./pages/admin/Charts";
 import NotFound from "./pages/NotFound";
 import UserProfile from "./pages/UserProfile";
@@ -17,11 +19,13 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import FeatureManagement from "./pages/admin/FeatureManagement";
 import FolderView from "./pages/client/FolderView";
-import TrendHama from "./pages/client/TrendHama";
 import TeamManagement from "./pages/admin/TeamManagement";
 import TimInsekta from "./pages/client/TimInsekta";
 import BannerManagement from "./pages/admin/BannerManagement";
 import ClientLayout from "./pages/client/ClientLayout";
+import ChannelManagement from "./pages/admin/ChannelManagement";
+import KanalInsekta from "./pages/client/KanalInsekta";
+// import TrendHama from "./pages/client/TrendHama";
 
 function App() {
   return (
@@ -45,12 +49,12 @@ function App() {
               <Route path="/admin/profile" element={<UserProfile />} />
               <Route path="/admin/teams" element={<TeamManagement />} />
               <Route path="/admin/banners" element={<BannerManagement />} />
+              <Route path="/admin/channels" element={<ChannelManagement />} />
             </Route>
           </Route>
 
           {/* --- CLIENT ROUTES --- */}
           <Route element={<PrivateRoute allowedRoles={["client"]} />}>
-            {/* Gunakan Route wrapper manual untuk Layout Client */}
             <Route
               path="/dashboard"
               element={
@@ -60,17 +64,26 @@ function App() {
               }
             />
 
-            <Route
+            {/* <Route
               path="/laporan-insekta"
               element={
                 <ClientLayout>
                   <TrendHama />
                 </ClientLayout>
               }
+            /> */}
+
+            <Route
+              path="/kanal-insekta"
+              element={
+                <ClientLayout>
+                  <KanalInsekta />
+                </ClientLayout>
+              }
             />
 
             <Route
-              path="//tim-insekta"
+              path="/tim-insekta"
               element={
                 <ClientLayout>
                   <TimInsekta />
@@ -97,7 +110,7 @@ function App() {
             />
           </Route>
 
-          {/* --- 404 PAGE (Taruh paling bawah) --- */}
+          {/* --- 404 PAGE --- */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

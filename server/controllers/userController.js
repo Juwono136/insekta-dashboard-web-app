@@ -9,13 +9,11 @@ import { saveImage, deleteImage } from "../utils/imageProcessor.js";
 // @access  Private/Admin
 export const getUsers = async (req, res) => {
   try {
-    // 1. Ambil Query Parameters
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || "";
     const role = req.query.role || ""; // Filter by Role
 
-    // 2. Build Query
     const query = {
       $or: [
         { name: { $regex: search, $options: "i" } }, // Case insensitive
@@ -27,17 +25,14 @@ export const getUsers = async (req, res) => {
       query.role = role;
     }
 
-    // 3. Hitung Total Data (untuk Pagination)
     const totalUsers = await User.countDocuments(query);
 
-    // 4. Ambil Data
     const users = await User.find(query)
       .select("-password") // Jangan kirim password
       .sort({ createdAt: -1 }) // Urutkan terbaru
       .skip((page - 1) * limit)
       .limit(limit);
 
-    // 5. Response Lengkap
     res.status(200).json({
       users,
       pagination: {
@@ -90,10 +85,8 @@ export const createUserByAdmin = async (req, res) => {
       throw new Error("User sudah terdaftar");
     }
 
-    // 1. Generate Random Password
     const tempPassword = crypto.randomBytes(4).toString("hex"); // cth: a1b2c3d4
 
-    // 2. Create User dengan status First Login = TRUE
     const user = await User.create({
       name,
       email,
@@ -105,11 +98,9 @@ export const createUserByAdmin = async (req, res) => {
     });
 
     if (user) {
-      // 3. Siapkan Email
       const loginUrl = `${process.env.CLIENT_URL}/login`;
       const emailContent = welcomeUserTemplate(user.name, user.email, tempPassword, loginUrl);
 
-      // 4. Kirim Email
       try {
         await sendEmail({
           email: user.email,
@@ -149,7 +140,6 @@ export const updateUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-      // 1. Update Nama & Email
       user.name = req.body.name || user.name;
       // Validasi email unik jika diganti
       if (req.body.email && req.body.email !== user.email) {
@@ -161,7 +151,6 @@ export const updateUserProfile = async (req, res) => {
         user.email = req.body.email;
       }
 
-      // 2. Update Avatar (Jika ada file upload)
       if (req.file) {
         // Hapus avatar lama jika bukan default/link luar
         if (user.avatar && user.avatar.startsWith("/uploads")) {
@@ -174,7 +163,6 @@ export const updateUserProfile = async (req, res) => {
         });
       }
 
-      // 3. Ganti Password (Dengan Validasi Old Password)
       if (req.body.password) {
         // Jika ini BUKAN first login (user biasa ganti pass), WAJIB cek password lama
         if (!user.isFirstLogin) {

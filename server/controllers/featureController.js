@@ -10,12 +10,10 @@ export const createFeature = async (req, res) => {
   try {
     const { title, assignedTo, defaultType, defaultUrl, defaultSubMenus } = req.body;
 
-    // 1. Validasi Input Global
     if (!title) {
       return res.status(400).json({ message: "Judul menu wajib diisi" });
     }
 
-    // 2. Validasi File Icon (Wajib Ada untuk Create)
     if (!req.file) {
       return res.status(400).json({ message: "Icon wajib diupload (PNG/JPG/WEBP)" });
     }
@@ -37,7 +35,6 @@ export const createFeature = async (req, res) => {
       return res.status(400).json({ message: "Format data JSON tidak valid." });
     }
 
-    // 5. Simpan ke Database
     const feature = await Feature.create({
       title,
       icon: iconPath,
@@ -69,10 +66,8 @@ export const updateFeature = async (req, res) => {
     const feature = await Feature.findById(id);
     if (!feature) return res.status(404).json({ message: "Fitur tidak ditemukan" });
 
-    // 1. Update Judul
     if (title) feature.title = title;
 
-    // 2. Update Default Config
     if (defaultType) feature.defaultType = defaultType;
 
     if (feature.defaultType === "single") {
@@ -89,7 +84,6 @@ export const updateFeature = async (req, res) => {
       }
     }
 
-    // 3. Update Konfigurasi User
     if (assignedTo) {
       try {
         feature.assignedTo = JSON.parse(assignedTo);
@@ -98,7 +92,6 @@ export const updateFeature = async (req, res) => {
       }
     }
 
-    // 4. Update Icon (Jika ada file baru diupload)
     if (req.file) {
       if (feature.icon) deleteImage(feature.icon);
 
@@ -160,12 +153,10 @@ export const getAllFeatures = async (req, res) => {
 // @route   GET /api/features/my-features
 export const getMyFeatures = async (req, res) => {
   try {
-    // 1. Cari semua fitur dimana User ID ini ada di dalam array assignedTo
     const features = await Feature.find({
       "assignedTo.user": req.user._id,
     });
 
-    // 2. Map/Transform data (Pilih antara Default vs Custom)
     const myFeatures = features
       .map((f) => {
         // Cari config spesifik milik user yang sedang login
@@ -174,10 +165,6 @@ export const getMyFeatures = async (req, res) => {
         );
 
         if (!myConfig) return null;
-
-        // LOGIKA FALLBACK:
-        // Jika isCustom = true, gunakan config user.
-        // Jika isCustom = false, gunakan config default (global).
 
         const finalType = myConfig.isCustom ? myConfig.type : f.defaultType;
         const finalUrl = myConfig.isCustom ? myConfig.url : f.defaultUrl;

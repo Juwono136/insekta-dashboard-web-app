@@ -1,5 +1,9 @@
 import { useState, useMemo } from "react";
+
+// assets
 import { FiSearch, FiChevronDown, FiChevronRight, FiBriefcase, FiSettings } from "react-icons/fi";
+
+// features
 import ContentConfigForm from "./ContentConfigForm";
 
 const ClientAccessPanel = ({
@@ -7,37 +11,31 @@ const ClientAccessPanel = ({
   userConfigs,
   toggleUser,
   updateUserConfig,
-  onRequestUncheckAll, // Trigger konfirmasi uncheck massal
-  onRequestDeleteSubMenu, // Trigger konfirmasi hapus link submenu
+  onRequestUncheckAll,
+  onRequestDeleteSubMenu,
 }) => {
   const [searchClient, setSearchClient] = useState("");
   const [expandedCompanies, setExpandedCompanies] = useState({});
 
-  // Helper: Toggle Custom Mode (Override Default)
   const toggleCustomMode = (userId) => {
     const current = userConfigs[userId];
     updateUserConfig(userId, {
       isCustom: !current.isCustom,
-      // Jika mengaktifkan custom, kita reset value-nya agar admin mengisi ulang
-      // Jika mematikan custom, value ini akan diabaikan oleh backend (pakai default)
       type: "single",
       url: "",
       subMenus: [],
     });
   };
 
-  // Logic Pengelompokan Client berdasarkan Perusahaan
   const groupedClients = useMemo(() => {
     const groups = {};
 
-    // Filter berdasarkan search text
     const filtered = allClients.filter(
       (u) =>
         u.name.toLowerCase().includes(searchClient.toLowerCase()) ||
         (u.companyName && u.companyName.toLowerCase().includes(searchClient.toLowerCase()))
     );
 
-    // Proses Grouping
     filtered.forEach((user) => {
       const company = user.companyName || "Tanpa Perusahaan";
       if (!groups[company]) groups[company] = [];
@@ -49,7 +47,6 @@ const ClientAccessPanel = ({
 
   return (
     <div className="w-full lg:w-1/2 flex flex-col h-full bg-white">
-      {/* 1. Search Header */}
       <div className="p-3 border-b border-gray-100 bg-white sticky top-0 z-10">
         <div className="relative">
           <FiSearch className="absolute z-10 left-3 top-2 text-gray-400" />
@@ -63,7 +60,6 @@ const ClientAccessPanel = ({
         </div>
       </div>
 
-      {/* 2. Tree View List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {Object.keys(groupedClients).length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-400 text-xs opacity-60">
@@ -83,7 +79,6 @@ const ClientAccessPanel = ({
                 key={company}
                 className="border border-gray-200 rounded-lg overflow-hidden shadow-sm"
               >
-                {/* A. Header Perusahaan (Parent) */}
                 <div
                   className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${
                     isExpanded ? "bg-blue-50" : "bg-gray-50 hover:bg-gray-100"
@@ -110,7 +105,6 @@ const ClientAccessPanel = ({
                       </span>
                     )}
 
-                    {/* Tombol Pilih Semua / Batal Semua */}
                     <button
                       type="button"
                       className={`btn btn-xs ${
@@ -118,10 +112,8 @@ const ClientAccessPanel = ({
                       }`}
                       onClick={() => {
                         if (isAllSelected) {
-                          // Gunakan callback requestUncheckAll untuk memicu konfirmasi di parent
                           onRequestUncheckAll(users);
                         } else {
-                          // Langsung pilih semua (aman)
                           users.forEach((u) => {
                             if (!userConfigs[u._id]) toggleUser(u);
                           });
@@ -133,13 +125,12 @@ const ClientAccessPanel = ({
                   </div>
                 </div>
 
-                {/* B. List User (Children) */}
                 {isExpanded && (
                   <div className="divide-y divide-gray-100 border-t border-gray-100 bg-white">
                     {users.map((u) => {
-                      const config = userConfigs[u._id]; // Mengambil config user ini (jika ada)
-                      const isSelected = !!config; // User ini dicentang?
-                      const isCustom = config?.isCustom; // User ini pakai mode custom?
+                      const config = userConfigs[u._id];
+                      const isSelected = !!config;
+                      const isCustom = config?.isCustom;
 
                       return (
                         <div
@@ -207,7 +198,6 @@ const ClientAccessPanel = ({
                               {isSelected && (
                                 <div className="mt-2 animate-fade-in">
                                   {isCustom ? (
-                                    // Tampilkan Form Config Custom (Komponen Modular)
                                     <ContentConfigForm
                                       config={config}
                                       onChange={(newConf) => updateUserConfig(u._id, newConf)}
@@ -216,7 +206,6 @@ const ClientAccessPanel = ({
                                       }
                                     />
                                   ) : (
-                                    // Tampilkan Info Inherit Default
                                     <div className="ml-8 p-2 text-[10px] text-gray-500 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-2">
                                       <FiSettings className="text-gray-400" />
                                       Menggunakan konfigurasi konten <b>General (Default)</b>.

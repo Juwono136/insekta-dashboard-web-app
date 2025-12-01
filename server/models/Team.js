@@ -5,7 +5,7 @@ const TeamSchema = new mongoose.Schema(
     name: { type: String, required: true },
     role: { type: String, default: "Teknisi" },
     phone: { type: String, required: true },
-    area: { type: String, required: true }, // Tetap ada sebagai Label Grouping
+    area: { type: String, required: true },
     outlets: { type: String },
     photo: { type: String },
     assignedClients: [

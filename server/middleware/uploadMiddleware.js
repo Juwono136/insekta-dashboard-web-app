@@ -1,10 +1,8 @@
 import multer from "multer";
 import path from "path";
 
-// 1. Simpan di Memory (Buffer), bukan langsung ke Disk
 const storage = multer.memoryStorage();
 
-// 2. Filter File (Hanya Gambar)
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|webp/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());

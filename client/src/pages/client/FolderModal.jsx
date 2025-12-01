@@ -1,4 +1,7 @@
+// assets
 import { FiX, FiExternalLink, FiCornerDownRight } from "react-icons/fi";
+
+// features
 import { getImageUrl } from "../../utils/imageUrl";
 
 const FolderModal = ({ isOpen, onClose, feature }) => {
@@ -7,7 +10,6 @@ const FolderModal = ({ isOpen, onClose, feature }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-        {/* Header Modal: Icon & Title */}
         <div className="bg-gray-50 p-6 text-center border-b border-gray-100 relative">
           <button
             onClick={onClose}
@@ -27,7 +29,6 @@ const FolderModal = ({ isOpen, onClose, feature }) => {
           <p className="text-xs text-gray-500 mt-1">Pilih menu yang ingin diakses</p>
         </div>
 
-        {/* List Submenu */}
         <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {feature.subMenus && feature.subMenus.length > 0 ? (
             <div className="grid gap-3">

@@ -1,4 +1,7 @@
+// assets
 import { FiMail, FiEdit3, FiTrash2, FiBriefcase } from "react-icons/fi";
+
+// features
 import { getImageUrl } from "../utils/imageUrl";
 
 const UserTable = ({ users, pagination, filters, onEdit, onDelete }) => {
@@ -53,7 +56,9 @@ const UserTable = ({ users, pagination, filters, onEdit, onDelete }) => {
                   <div className="flex flex-col gap-1">
                     <span
                       className={`badge ${
-                        user.role === "admin" ? "badge-primary" : "badge-warning text-white"
+                        user.role === "admin"
+                          ? "badge-success text-white"
+                          : "badge-warning text-white"
                       } badge-sm uppercase font-bold border-none shadow-sm w-fit`}
                     >
                       {user.role}

@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+
+// assets
 import {
   FiEdit3,
   FiTrash2,
@@ -7,10 +9,11 @@ import {
   FiUser,
   FiBriefcase,
 } from "react-icons/fi";
+
+// features
 import { getImageUrl } from "../utils/imageUrl";
 
 const FeatureCard = ({ feature, onEdit, onDelete }) => {
-  // Helper: Validasi URL agar tidak lari ke localhost
   const getValidUrl = (url) => {
     if (!url) return "#";
     if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -19,19 +22,12 @@ const FeatureCard = ({ feature, onEdit, onDelete }) => {
     return `https://${url}`;
   };
 
-  // [PERBAIKAN UTAMA DI SINI]
-  // Grouping Logic dengan Fallback (Default vs Custom)
   const groupedAccess = useMemo(() => {
     const groups = {};
     if (feature.assignedTo && Array.isArray(feature.assignedTo)) {
       feature.assignedTo.forEach((item) => {
         const userName = item.user?.name || "User Terhapus";
         const company = item.companyName || "Tanpa Perusahaan";
-
-        // LOGIKA PENENTUAN KONTEN (PENTING!)
-        // Cek apakah item ini 'isCustom'?
-        // Jika IYA: Pakai item.type dan item.url
-        // Jika TIDAK: Pakai feature.defaultType dan feature.defaultUrl
 
         const isCustom = item.isCustom;
 
@@ -43,7 +39,7 @@ const FeatureCard = ({ feature, onEdit, onDelete }) => {
 
         groups[company].push({
           userName,
-          isCustom, // Kita simpan status ini untuk label UI (opsional)
+          isCustom,
           type: finalType,
           url: finalUrl,
           subMenus: finalSubMenus,
@@ -51,7 +47,7 @@ const FeatureCard = ({ feature, onEdit, onDelete }) => {
       });
     }
     return groups;
-  }, [feature]); // Dependency ke seluruh object feature agar update jika default berubah
+  }, [feature]);
 
   return (
     <div className="card bg-white shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300 h-full flex flex-col overflow-hidden group">
@@ -119,7 +115,7 @@ const FeatureCard = ({ feature, onEdit, onDelete }) => {
                         <div className="flex items-center gap-1.5">
                           <FiUser className="text-gray-400" size={10} />
                           <span className="text-xs font-semibold text-gray-800">{u.userName}</span>
-                          {/* Indikator Default vs Custom */}
+
                           <span
                             className={`text-[9px] px-1 rounded ${
                               u.isCustom

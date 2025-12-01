@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+
+// assets
 import { FiPlus, FiEdit3, FiX, FiChevronDown, FiBriefcase, FiChevronUp } from "react-icons/fi";
 
 const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList = [] }) => {
@@ -10,11 +12,9 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
     isActive: true,
   });
 
-  // State Combobox
   const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
   const companyInputRef = useRef(null);
 
-  // Load initial data
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
@@ -23,7 +23,6 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
     }
   }, [initialData, isOpen]);
 
-  // Handle klik luar dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (companyInputRef.current && !companyInputRef.current.contains(event.target)) {
@@ -42,7 +41,6 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      {/* Tambahkan overflow-visible agar dropdown tidak terpotong jika ingin keluar batas (opsional, tapi aman dengan logic Upwards) */}
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -62,7 +60,6 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
           </button>
         </div>
 
-        {/* Form Body - Tambahkan pb-20 agar ada ruang nafas di bawah */}
         <form
           id="userForm"
           onSubmit={(e) => {
@@ -114,7 +111,6 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
               </select>
             </div>
 
-            {/* --- COMBOBOX PERUSAHAAN (FIXED: OPEN UPWARDS) --- */}
             <div className="form-control relative" ref={companyInputRef}>
               <label className="label font-semibold text-gray-700 text-sm">
                 Perusahaan {formData.role === "client" && <span className="text-red-500">*</span>}
@@ -132,7 +128,6 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
                   onFocus={() => setShowCompanyDropdown(true)}
                   required={formData.role === "client"}
                 />
-                {/* Icon panah berubah arah jika dropdown terbuka */}
                 {showCompanyDropdown ? (
                   <FiChevronUp className="absolute right-3 top-3.5 text-blue-600 pointer-events-none" />
                 ) : (
@@ -140,8 +135,7 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
                 )}
               </div>
 
-              {/* DROPDOWN LIST - UPWARDS */}
-              {/* Class 'bottom-full' dan 'mb-1' membuatnya muncul DI ATAS input */}
+              {/* DROPDOWN LIST */}
               {showCompanyDropdown && filteredCompanies.length > 0 && (
                 <ul className="absolute bottom-full mb-1 left-0 z-50 w-full bg-white border border-gray-200 rounded-lg shadow-2xl max-h-48 overflow-y-auto animate-fade-in-up origin-bottom">
                   {filteredCompanies.map((comp, idx) => (
@@ -160,7 +154,6 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
                 </ul>
               )}
             </div>
-            {/* ------------------------------------------------ */}
           </div>
 
           {type === "edit" && (
@@ -188,7 +181,7 @@ const UserModal = ({ type, isOpen, onClose, onSubmit, initialData, companyList =
           <button
             form="userForm"
             type="submit"
-            className="btn bg-blue-800 hover:bg-blue-900 text-white flex-1 shadow-lg"
+            className="btn bg-[#093050] hover:bg-blue-900 text-white flex-1 shadow-lg"
           >
             Lanjut
           </button>

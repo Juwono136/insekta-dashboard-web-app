@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import userService from "../../services/userService";
 import toast from "react-hot-toast";
+
+// assets
 import { FiPlus, FiSearch, FiFilter, FiInfo, FiTrash2, FiCheckCircle } from "react-icons/fi";
+
+// components
 import Breadcrumbs from "../../components/Breadcrumbs";
 import Pagination from "../../components/Pagination";
-
-// Import Komponen Modular
 import UserTable from "../../components/UserTable";
 import UserModal from "../../components/UserModal";
 
+// features
+import userService from "../../services/userService";
+
 const UserManagement = () => {
-  // --- STATE ---
   const [users, setUsers] = useState([]);
-  const [companyList, setCompanyList] = useState([]); // List Perusahaan
+  const [companyList, setCompanyList] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalUsers: 0 });
   const [filters, setFilters] = useState({ search: "", role: "", limit: 5, page: 1 });
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +26,6 @@ const UserManagement = () => {
   const [formData, setFormData] = useState(null); // Data sementara dari modal
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- FETCH DATA ---
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -42,7 +44,6 @@ const UserManagement = () => {
       const data = await userService.getCompanies();
       setCompanyList(data);
     } catch (error) {
-      // Silent error agar tidak mengganggu UX
       console.error("Gagal load perusahaan");
     }
   };
@@ -56,14 +57,11 @@ const UserManagement = () => {
     fetchCompanies();
   }, []);
 
-  // --- HANDLERS ---
-  // Menerima data dari UserModal, lalu buka Konfirmasi
   const handleFormSubmit = (data) => {
     setFormData(data);
     setModalType(modalType === "create" ? "confirm-create" : "confirm-update");
   };
 
-  // Eksekusi ke Backend (Setelah Konfirmasi)
   const executeSave = async () => {
     setIsSubmitting(true);
     try {
@@ -117,7 +115,7 @@ const UserManagement = () => {
             setFormData(null);
             setModalType("create");
           }}
-          className="btn bg-blue-800 hover:bg-blue-900 text-white shadow-lg gap-2"
+          className="btn bg-[#093050] hover:bg-blue-900 text-white shadow-lg gap-2"
         >
           <FiPlus /> Tambah User
         </button>
@@ -164,7 +162,7 @@ const UserManagement = () => {
         <FiInfo /> Total: <b>{pagination.totalUsers}</b> user.
       </div>
 
-      {/* TABEL USER (MODULAR) */}
+      {/* TABEL USER */}
       {isLoading ? (
         <div className="h-64 flex justify-center items-center">
           <span className="loading loading-spinner text-blue-800"></span>
@@ -194,17 +192,17 @@ const UserManagement = () => {
         />
       </div>
 
-      {/* MODAL FORM (MODULAR) */}
+      {/* MODAL FORM*/}
       <UserModal
         type={modalType === "create" ? "create" : "edit"}
         isOpen={modalType === "create" || modalType === "edit"}
         onClose={() => setModalType(null)}
         onSubmit={handleFormSubmit}
-        initialData={formData} // Kirim data existing untuk edit
-        companyList={companyList} // Kirim list perusahaan untuk combobox
+        initialData={formData}
+        companyList={companyList}
       />
 
-      {/* MODAL KONFIRMASI (Reusable Logic) */}
+      {/* MODAL KONFIRMASI */}
       {modalType?.startsWith("confirm") && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">

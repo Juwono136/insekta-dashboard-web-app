@@ -1,17 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
-import { FiGrid, FiUsers, FiUser, FiLayers, FiPieChart } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import clsx from "clsx";
+
+// assets
+import { FiGrid, FiUsers, FiUser, FiLayers, FiPieChart, FiGlobe } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
 import { FaUsers } from "react-icons/fa6";
 import { FaRegFileImage } from "react-icons/fa";
-import clsx from "clsx";
 import LogoInsektaWhite from "../assets/logo-insekta-white.png";
-import { useSelector } from "react-redux";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // Fungsi helper: Tutup sidebar hanya jika di mode mobile
   const handleMobileMenuClick = () => {
     if (window.innerWidth < 1024) {
       // 1024px adalah breakpoint 'lg' di Tailwind
@@ -27,11 +28,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { title: "Edit Banner", path: "/admin/banners", icon: <FaRegFileImage /> },
     { title: "Edit Profile", path: "/admin/profile", icon: <FiUser /> },
     { title: "Data Grafik", path: "/admin/charts", icon: <FiPieChart /> },
+    { title: "Kanal Insekta", path: "/admin/channels", icon: <FiGlobe /> },
   ];
 
   return (
     <>
-      {/* 1. Overlay Gelap (Hanya Mobile) */}
+      {/* Overlay Gelap (Hanya Mobile) */}
       <div
         className={clsx(
           "fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity duration-300",
@@ -40,13 +42,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         onClick={toggleSidebar}
       ></div>
 
-      {/* 2. Container Sidebar */}
+      {/* Container Sidebar */}
       <aside
         className={clsx(
-          "fixed lg:static inset-y-0 left-0 z-30 w-64 bg-blue-900 text-white transition-transform duration-300 ease-in-out flex flex-col shadow-xl",
-          // LOGIKA PENTING:
-          // Jika Mobile: Cek isOpen (muncul/hilang).
-          // Jika Desktop (lg): SELALU MUNCUL (lg:translate-x-0)
+          "fixed lg:static inset-y-0 left-0 z-30 w-64 bg-[#093050] text-white transition-transform duration-300 ease-in-out flex flex-col shadow-xl",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -78,11 +77,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <Link
                 key={index}
                 to={menu.path}
-                onClick={handleMobileMenuClick} // <-- PENTING: Tutup sidebar saat klik menu
+                onClick={handleMobileMenuClick}
                 className={clsx(
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
                   isActive
-                    ? "bg-indigo-500 text-white shadow-lg shadow-blue-500/20 translate-x-1"
+                    ? "bg-blue-800 text-white shadow-lg shadow-blue-500/20 translate-x-1"
                     : "text-blue-100 hover:bg-blue-700/50 hover:text-white hover:translate-x-1"
                 )}
               >

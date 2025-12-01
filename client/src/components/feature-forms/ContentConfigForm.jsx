@@ -64,7 +64,7 @@ const ContentConfigForm = ({ config, onChange, onDeleteSubMenuRequest }) => {
               {/* TRIGGER KONFIRMASI HAPUS */}
               <button
                 type="button"
-                onClick={() => onDeleteSubMenuRequest(idx)} // Panggil fungsi parent
+                onClick={() => onDeleteSubMenuRequest(idx)}
                 className="text-red-400 hover:text-red-600 transition-colors"
               >
                 <FiX />

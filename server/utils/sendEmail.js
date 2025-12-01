@@ -1,10 +1,6 @@
 import nodemailer from "nodemailer";
 
 const sendEmail = async (options) => {
-  // 1. Buat Transporter (Kurir Email)
-  // Untuk testing development, kita biasanya menggunakan Mailtrap atau Ethereal
-  // Tapi di sini kita pakai konfigurasi Generic SMTP (bisa Gmail/Hosting)
-
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com", // Default Gmail
     port: process.env.SMTP_PORT || 587,
@@ -15,15 +11,13 @@ const sendEmail = async (options) => {
     },
   });
 
-  // 2. Definisikan Opsi Email
   const mailOptions = {
     from: `${process.env.FROM_NAME || "Insekta Support"} <${process.env.EMAIL_USER}>`,
     to: options.email,
     subject: options.subject,
-    html: options.message, // Kita kirim format HTML
+    html: options.message,
   };
 
-  // 3. Kirim Email
   await transporter.sendMail(mailOptions);
 };
 

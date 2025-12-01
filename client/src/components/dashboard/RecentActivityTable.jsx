@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
-import { getImageUrl } from "../../utils/imageUrl";
+
+// assets
 import { FiClock } from "react-icons/fi";
+
+// features
+import { getImageUrl } from "../../utils/imageUrl";
 
 const RecentActivityTable = ({ features }) => {
   return (
@@ -8,7 +12,7 @@ const RecentActivityTable = ({ features }) => {
       <div className="card-body p-0">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h3 className="font-bold text-gray-700 text-base md:text-lg">Aktivitas Menu Terbaru</h3>
-          <Link to="/admin/features" className="text-xs btn btn-ghost bg-blue-100 text-blue-600">
+          <Link to="/admin/features" className="text-xs btn btn-ghost bg-[#093050] text-blue-100">
             Lihat Semua
           </Link>
         </div>

@@ -13,7 +13,6 @@ const styles = {
     "background-color: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin-top: 20px; font-size: 14px; color: #856404; border-radius: 4px;",
 };
 
-// 1. Template Dasar (Wrapper)
 const wrapEmail = (content) => {
   return `
     <div style="${styles.container}">
@@ -33,7 +32,6 @@ const wrapEmail = (content) => {
   `;
 };
 
-// 2. Template Reset Password
 export const resetPasswordTemplate = (url) => {
   const content = `
     <h2>Permintaan Reset Password</h2>
@@ -50,7 +48,6 @@ export const resetPasswordTemplate = (url) => {
   return wrapEmail(content);
 };
 
-// 3. Template Welcome User (Untuk User Baru yang dibuat Admin)
 export const welcomeUserTemplate = (name, email, password, loginUrl) => {
   const content = `
     <h2>Selamat Datang di Dashboard Insekta!</h2>

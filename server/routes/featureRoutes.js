@@ -14,10 +14,7 @@ const router = express.Router();
 // Routes
 router.get("/my-features", protect, getMyFeatures);
 
-router
-  .route("/")
-  // Tambahkan middleware 'upload.single' sebelum controller
-  .post(protect, admin, upload.single("icon"), createFeature);
+router.route("/").post(protect, admin, upload.single("icon"), createFeature);
 
 router.route("/admin").get(protect, admin, getAllFeatures);
 

@@ -1,8 +1,7 @@
 import xlsx from "xlsx";
-import Chart from "../models/Chart.js"; // <-- Import Model Baru
+import Chart from "../models/Chart.js";
 import mongoose from "mongoose";
 
-// @desc    1. Upload Excel & Convert to JSON (Preview Only)
 // @route   POST /api/upload/excel-preview
 // @access  Private/Admin
 export const parseExcel = async (req, res) => {
@@ -27,7 +26,6 @@ export const parseExcel = async (req, res) => {
   }
 };
 
-// @desc    2. Save Chart Data (Setelah Preview OK)
 // @route   POST /api/upload/save-chart
 // @access  Private/Admin
 export const saveChart = async (req, res) => {
@@ -51,7 +49,6 @@ export const saveChart = async (req, res) => {
   }
 };
 
-// @desc    3. Get All Charts (Untuk Dashboard Admin)
 // @route   GET /api/upload/charts
 // @access  Private/Admin
 export const getAllCharts = async (req, res) => {
@@ -63,7 +60,6 @@ export const getAllCharts = async (req, res) => {
   }
 };
 
-// @desc    4. Delete Chart (Permintaan Kamu)
 // @route   DELETE /api/upload/charts/:id
 // @access  Private/Admin
 export const deleteChart = async (req, res) => {

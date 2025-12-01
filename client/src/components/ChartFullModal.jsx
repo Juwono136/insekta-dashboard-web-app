@@ -6,10 +6,6 @@ const ChartFullModal = ({ isOpen, onClose, chart }) => {
 
   return (
     <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-0 md:p-6">
-      {/* RESPONSIVE CONTAINER:
-        - Mobile: Full Screen (w-full h-full), sudut kotak (rounded-none).
-        - Desktop (md): Ada margin, sudut membulat (rounded-2xl), bayangan besar.
-      */}
       <div className="bg-white w-full h-full md:max-w-[90vw] md:h-[90vh] md:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
         {/* HEADER */}
         <div className="flex justify-between items-center px-4 md:px-6 py-3 md:py-4 bg-white border-b border-gray-100 z-10 shadow-sm shrink-0">
@@ -38,10 +34,6 @@ const ChartFullModal = ({ isOpen, onClose, chart }) => {
 
         {/* CONTENT AREA */}
         <div className="flex-1 bg-gray-100 relative w-full h-full overflow-hidden">
-          {/* PENTING: Kita gunakan ChartPreview dengan interactive={true} 
-              Ini akan memuat IFRAME asli Google Sheets, bukan gambar.
-              User bisa melihat tooltip angka detail di sini.
-           */}
           <ChartPreview url={chart.embedUrl} title={chart.title} interactive={true} />
         </div>
       </div>

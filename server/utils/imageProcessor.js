@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// 1. Konfigurasi Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -25,8 +24,6 @@ export const saveImage = async (fileBuffer, folderName, width = 500, options = {
       const format = options.format || "jpeg";
       const fit = options.fit || "cover";
 
-      // 1. Proses Buffer dengan SHARP (Resize & Compress di Memori)
-      // Kita tetap pakai Sharp agar file yg dikirim ke Cloudinary sudah optimal/kecil
       let pipeline = sharp(fileBuffer).resize(width, width, {
         fit: fit,
         background:
@@ -42,7 +39,6 @@ export const saveImage = async (fileBuffer, folderName, width = 500, options = {
 
       const processedBuffer = await pipeline.toBuffer();
 
-      // 2. Upload Buffer ke Cloudinary menggunakan upload_stream
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: `insekta_app/${folderName}`, // Folder tujuan di Cloudinary
@@ -55,7 +51,6 @@ export const saveImage = async (fileBuffer, folderName, width = 500, options = {
             console.error("Cloudinary Upload Error:", error);
             return reject(error);
           }
-          // 3. Sukses: Kembalikan URL HTTPS
           resolve(result.secure_url);
         }
       );
@@ -76,13 +71,6 @@ export const deleteImage = async (imageUrl) => {
   if (!imageUrl) return;
 
   try {
-    // URL Cloudinary contoh:
-    // https://res.cloudinary.com/cloudname/image/upload/v1234/insekta_app/teams/teams-123.jpg
-
-    // Kita perlu mengambil "Public ID".
-    // Public ID dari contoh di atas adalah: "insekta_app/teams/teams-123"
-
-    // Regex untuk mengambil string setelah '/upload/v.../' dan sebelum format file (misal .jpg)
     const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
     const match = imageUrl.match(regex);
 

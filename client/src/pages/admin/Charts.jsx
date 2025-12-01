@@ -1,38 +1,37 @@
 import { useState, useEffect, useMemo } from "react";
-import chartService from "../../services/chartService";
 import toast from "react-hot-toast";
+
+// assets
 import { FiPlus, FiSearch, FiLayers, FiAlertTriangle } from "react-icons/fi";
+
+// components
 import Breadcrumbs from "../../components/Breadcrumbs";
 import Pagination from "../../components/Pagination";
-
-// Modular Components
 import ChartForm from "./ChartForm";
 import ChartGrid from "./ChartGrid";
 import ChartFullModal from "../../components/ChartFullModal";
 
+// features
+import chartService from "../../services/chartService";
+
 const AdminCharts = () => {
   const [activeTab, setActiveTab] = useState("list"); // 'list' | 'create' | 'edit'
 
-  // Data & Pagination
   const [charts, setCharts] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalData: 0 });
 
-  // State Filters & UI
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // State Selection
   const [editChartData, setEditChartData] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [viewChart, setViewChart] = useState(null);
 
-  // Fetch Data
   const fetchCharts = async () => {
     setIsLoading(true);
     try {
-      // Limit besar agar filter kategori frontend berjalan mulus
       const res = await chartService.getCharts({ search, page: 1, limit: 100 });
       setCharts(res.data);
       setPagination(res.pagination);
@@ -48,19 +47,16 @@ const AdminCharts = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Logic Categories
   const categories = useMemo(() => {
     const cats = charts.map((c) => c.category || "General");
     return ["All", ...new Set(cats)].sort();
   }, [charts]);
 
-  // Logic Filter Category
   const filteredCharts = useMemo(() => {
     if (selectedCategory === "All") return charts;
     return charts.filter((c) => (c.category || "General") === selectedCategory);
   }, [charts, selectedCategory]);
 
-  // Handlers
   const handleSave = async (formData) => {
     setIsSubmitting(true);
     try {
@@ -107,7 +103,7 @@ const AdminCharts = () => {
           <button
             className={`join-item btn btn-sm border-none gap-2 ${
               activeTab === "list"
-                ? "bg-blue-800 text-white"
+                ? "bg-[#093050] text-white"
                 : "bg-transparent text-gray-500 hover:bg-gray-100"
             }`}
             onClick={() => {
@@ -146,7 +142,7 @@ const AdminCharts = () => {
                   onClick={() => setSelectedCategory(cat)}
                   className={`btn btn-sm rounded-xl border-none whitespace-nowrap px-4 font-medium ${
                     selectedCategory === cat
-                      ? "bg-blue-600 text-white shadow-md"
+                      ? "bg-[#093050] text-white shadow-md"
                       : "bg-transparent text-gray-500 hover:bg-gray-100"
                   }`}
                 >
@@ -185,18 +181,16 @@ const AdminCharts = () => {
             />
           )}
 
-          {/* Pagination (Fixed) */}
           <div className="flex justify-center mt-8 pt-6 border-t border-gray-100">
             <Pagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
-              onPageChange={(p) => {}} // Logic pagination frontend/backend
+              onPageChange={(p) => {}}
             />
           </div>
         </div>
       )}
 
-      {/* === MODE CREATE / EDIT === */}
       {(activeTab === "create" || activeTab === "edit") && (
         <ChartForm
           onSubmit={handleSave}
@@ -209,9 +203,6 @@ const AdminCharts = () => {
         />
       )}
 
-      {/* === MODALS === */}
-
-      {/* Delete Modal */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
@@ -238,7 +229,6 @@ const AdminCharts = () => {
         </div>
       )}
 
-      {/* Full Screen Modal */}
       <ChartFullModal isOpen={!!viewChart} onClose={() => setViewChart(null)} chart={viewChart} />
     </div>
   );

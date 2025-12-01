@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
+
+// assets
 import { FiTag, FiType, FiCode, FiLayout, FiAlertTriangle, FiHelpCircle } from "react-icons/fi";
+
+// components
 import ChartPreview from "../../components/ChartPreview";
 
 const ChartForm = ({ onSubmit, isSubmitting, initialData, onCancel }) => {
@@ -20,11 +24,9 @@ const ChartForm = ({ onSubmit, isSubmitting, initialData, onCancel }) => {
     }
   }, [initialData]);
 
-  // --- SECURITY & VALIDATION LOGIC ---
   const validateAndExtractUrl = (input) => {
     setErrorMsg("");
 
-    // 1. Cek apakah kosong
     if (!input || input.trim() === "") {
       setPreviewUrl("");
       return "";
@@ -32,15 +34,11 @@ const ChartForm = ({ onSubmit, isSubmitting, initialData, onCancel }) => {
 
     let urlToTest = input;
 
-    // 2. Jika user paste full iframe tag, ekstrak src-nya
     const srcMatch = input.match(/src="([^"]+)"/);
     if (srcMatch && srcMatch[1]) {
       urlToTest = srcMatch[1];
     }
 
-    // 3. SECURITY CHECK: Whitelist Domain
-    // Hanya izinkan domain google.com (docs, sheets, drive)
-    // Regex ini memastikan protokol https dan domain google
     const googleDomainRegex = /^https:\/\/(docs|drive|sheets)\.google\.com\//;
 
     if (!googleDomainRegex.test(urlToTest)) {
@@ -49,8 +47,6 @@ const ChartForm = ({ onSubmit, isSubmitting, initialData, onCancel }) => {
       return "";
     }
 
-    // 4. Sanitasi Tambahan (XSS Prevention sederhana)
-    // Pastikan tidak ada karakter mencurigakan di URL (biasanya URL google bersih)
     if (
       urlToTest.includes("javascript:") ||
       urlToTest.includes("vbscript:") ||
@@ -78,7 +74,6 @@ const ChartForm = ({ onSubmit, isSubmitting, initialData, onCancel }) => {
     e.preventDefault();
     if (errorMsg || !previewUrl) return;
 
-    // Kirim data bersih
     onSubmit({ ...formData, embedUrl: previewUrl });
   };
 
@@ -210,7 +205,7 @@ const ChartForm = ({ onSubmit, isSubmitting, initialData, onCancel }) => {
                 <button
                   type="submit"
                   disabled={!previewUrl || !!errorMsg || isSubmitting}
-                  className="btn bg-blue-800 hover:bg-blue-900 text-white flex-1 shadow-lg border-none"
+                  className="btn bg-[#093050] hover:bg-blue-900 text-white flex-1 shadow-lg border-none"
                 >
                   {isSubmitting ? (
                     <span className="loading loading-spinner loading-xs"></span>

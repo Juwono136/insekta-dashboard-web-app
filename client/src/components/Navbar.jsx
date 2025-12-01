@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react"; // Tambah useEffect
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../redux/slices/authSlice";
-import authService from "../services/authService";
 import { useNavigate, Link, NavLink } from "react-router-dom";
-import { FiLogOut, FiUser, FiGrid, FiCalendar, FiAlertCircle, FiTrendingUp } from "react-icons/fi";
+import toast from "react-hot-toast";
+
+// assets
+import { FiLogOut, FiUser, FiGrid, FiCalendar, FiAlertCircle, FiGlobe } from "react-icons/fi";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { FaUsers } from "react-icons/fa6";
-import toast from "react-hot-toast";
 import LogoInsekta from "../assets/logo-insekta.webp";
+
+// features
+import authService from "../services/authService";
+import { logout } from "../redux/slices/authSlice";
 import { getImageUrl } from "../utils/imageUrl";
 
 const Navbar = ({ toggleSidebar, role }) => {
@@ -15,18 +19,15 @@ const Navbar = ({ toggleSidebar, role }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // State untuk Modal Logout
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  // State untuk Tanggal/Waktu Realtime
   const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentDate(new Date()), 60000); // Update tiap menit
+    const timer = setInterval(() => setCurrentDate(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
-  // Format Tanggal: "Kamis, 20 Nov 2025"
   const formatDate = (date) => {
     return date.toLocaleDateString("id-ID", {
       weekday: "long",
@@ -36,7 +37,6 @@ const Navbar = ({ toggleSidebar, role }) => {
     });
   };
 
-  // FUNGSI BARU: Menutup dropdown secara paksa setelah klik
   const closeDropdown = () => {
     const elem = document.activeElement;
     if (elem) {
@@ -89,17 +89,17 @@ const Navbar = ({ toggleSidebar, role }) => {
 
           {role === "client" && !userInfo.isFirstLogin && (
             <NavLink
-              to="/laporan-insekta"
+              to="/kanal-insekta"
               className={({ isActive }) =>
                 `hidden md:flex text-sm items-center gap-2 p-2 rounded-md transition-all duration-300 ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                    ? "bg-[#093050] text-white shadow-lg shadow-blue-600/30"
                     : "text-gray-500 hover:bg-blue-50 hover:text-blue-600"
                 }`
               }
             >
-              <FiTrendingUp size={15} />
-              <span className="font-medium">Laporan Insekta</span>
+              <FiGlobe size={15} />
+              <span className="font-medium">Kanal Insekta</span>
             </NavLink>
           )}
 
@@ -109,7 +109,7 @@ const Navbar = ({ toggleSidebar, role }) => {
               className={({ isActive }) =>
                 `hidden md:flex text-sm items-center gap-2 p-2 rounded-md transition-all duration-300 ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                    ? "bg-[#093050] text-white shadow-lg shadow-blue-600/30"
                     : "text-gray-500 hover:bg-blue-50 hover:text-blue-600"
                 }`
               }
@@ -118,8 +118,6 @@ const Navbar = ({ toggleSidebar, role }) => {
               <span className="font-medium">Tim Insekta</span>
             </NavLink>
           )}
-
-          {/* Notifikasi Dummy */}
         </div>
 
         {/* KANAN: User Profile */}
@@ -161,11 +159,11 @@ const Navbar = ({ toggleSidebar, role }) => {
               {role === "client" && !userInfo.isFirstLogin && (
                 <li className="md:hidden">
                   <Link
-                    to="/trend-hama"
+                    to="/kanal-insekta"
                     onClick={closeDropdown}
                     className="py-3 px-4 text-gray-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg font-medium"
                   >
-                    <FiTrendingUp className="w-4 h-4" /> Trend Hama
+                    <FiGlobe className="w-4 h-4" /> Kanal Insekta
                   </Link>
                 </li>
               )}
@@ -206,7 +204,6 @@ const Navbar = ({ toggleSidebar, role }) => {
 
               <div className="h-px bg-gray-100 my-1"></div>
               <li>
-                {/* Ubah tombol logout jadi trigger modal */}
                 <button
                   onClick={() => setIsLogoutModalOpen(true)}
                   className="py-3 px-4 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg font-medium"

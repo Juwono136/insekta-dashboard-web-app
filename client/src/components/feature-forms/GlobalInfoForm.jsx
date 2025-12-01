@@ -1,5 +1,5 @@
 import { FiLayers, FiInfo, FiUploadCloud } from "react-icons/fi";
-import ContentConfigForm from "./ContentConfigForm"; // Re-use komponen ini
+import ContentConfigForm from "./ContentConfigForm";
 
 const GlobalInfoForm = ({
   title,
@@ -7,7 +7,7 @@ const GlobalInfoForm = ({
   iconPreview,
   handleIconChange,
   defaultConfig,
-  setDefaultConfig, // Props baru
+  setDefaultConfig,
 }) => {
   return (
     <div className="w-full lg:w-1/2 p-6 border-r border-gray-100 overflow-y-auto space-y-6 bg-gray-50/30">
@@ -77,7 +77,6 @@ const GlobalInfoForm = ({
         </div>
       </div>
 
-      {/* [BARU] DEFAULT CONFIGURATION */}
       <div className="border-t border-gray-200 pt-4">
         <div className="flex items-center gap-2 mb-2">
           <span className="badge badge-primary badge-sm">General</span>
@@ -87,7 +86,6 @@ const GlobalInfoForm = ({
           Konfigurasi ini akan dipakai semua client, kecuali di-custom.
         </p>
 
-        {/* Re-use ContentConfigForm untuk Default */}
         <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
           <ContentConfigForm
             config={defaultConfig}

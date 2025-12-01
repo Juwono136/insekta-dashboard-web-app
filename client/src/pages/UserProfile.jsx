@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setCredentials } from "../redux/slices/authSlice";
-import api from "../services/api";
 import toast from "react-hot-toast";
+
+// assets
 import {
   FiUser,
   FiMail,
@@ -14,9 +14,15 @@ import {
   FiInfo,
   FiCheckCircle,
 } from "react-icons/fi";
+
+// components
 import PageLoader from "../components/PageLoader";
-import { getImageUrl } from "../utils/imageUrl";
 import Breadcrumbs from "../components/Breadcrumbs";
+
+// features
+import api from "../services/api";
+import { setCredentials } from "../redux/slices/authSlice";
+import { getImageUrl } from "../utils/imageUrl";
 
 const UserProfile = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -36,7 +42,6 @@ const UserProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // State untuk Modal Konfirmasi
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
@@ -46,7 +51,6 @@ const UserProfile = () => {
         name: userInfo.name,
         email: userInfo.email,
       }));
-      // GUNAKAN HELPER URL DISINI
       setAvatarPreview(getImageUrl(userInfo.avatar));
     }
   }, [userInfo]);
@@ -63,11 +67,8 @@ const UserProfile = () => {
     }
   };
 
-  // Fungsi validasi sebelum buka modal
   const handlePreSubmit = (e) => {
     e.preventDefault();
-
-    // Validasi Password
     if (formData.password) {
       if (formData.password !== formData.confirmPassword) {
         return toast.error("Konfirmasi password baru tidak cocok!");
@@ -77,13 +78,11 @@ const UserProfile = () => {
       }
     }
 
-    // Jika lolos validasi, buka modal konfirmasi
     setIsConfirmOpen(true);
   };
 
-  // Fungsi Submit Asli (Dijalankan setelah konfirmasi modal)
   const executeUpdate = async () => {
-    setIsConfirmOpen(false); // Tutup modal
+    setIsConfirmOpen(false);
     setIsLoading(true);
 
     try {
@@ -147,7 +146,7 @@ const UserProfile = () => {
       )}
 
       <div className="card bg-white shadow-xl border border-gray-100 overflow-hidden">
-        <div className="h-32 bg-linear-to-r from-blue-800 to-blue-600"></div>
+        <div className="h-32 bg-linear-to-r from-[#093050] to-blue-700"></div>
 
         <div className="card-body pt-0 relative">
           {/* AVATAR SECTION */}
@@ -300,7 +299,7 @@ const UserProfile = () => {
               {/* Tombol Submit sekarang membuka Modal */}
               <button
                 type="submit"
-                className="btn bg-blue-800 hover:bg-blue-900 text-white px-4 shadow-lg shadow-blue-800/20"
+                className="btn bg-[#093050] hover:bg-blue-900 text-white px-4 shadow-lg shadow-blue-800/20"
               >
                 <FiSave className="mr-1" /> Simpan
               </button>
