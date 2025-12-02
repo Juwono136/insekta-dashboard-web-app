@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiLock, FiEye, FiEyeOff, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 import toast from "react-hot-toast";
-import authService from "../services/authService";
+
+// assets
+import { FiLock, FiEye, FiEyeOff, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 import LogoInsektaWhite from "../assets/logo-insekta-white.png";
+
+// features
+import authService from "../services/authService";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -18,7 +22,6 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi
     if (isLoading || isSuccess) return;
     if (password.length < 6) return toast.error("Password minimal 6 karakter.");
     if (password !== confirmPassword) return toast.error("Konfirmasi password tidak cocok.");
@@ -26,33 +29,27 @@ const ResetPassword = () => {
     setIsLoading(true);
 
     try {
-      // 1. Panggil API
       const response = await authService.resetPassword(token, password);
 
-      // 2. Debugging (Cek di Console Browser jika masih error)
       console.log("Respon Server:", response);
 
-      // 3. Ambil pesan (Handling aman jika response.data undefined)
       const successMessage = response?.data?.message || "Password berhasil diubah!";
 
-      // 4. Set Sukses
       setIsSuccess(true);
       toast.success(successMessage);
 
-      // 5. Redirect
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      console.error("Error Reset:", error); // Lihat error asli di console
+      console.error("Error Reset:", error);
 
-      // Cek apakah error dari response backend (400/500) atau error JS
       let message = "Gagal mereset password.";
 
       if (error.response && error.response.data) {
         message = error.response.data.message;
       } else if (error.message) {
-        message = error.message; // Menampilkan error JS jika ada
+        message = error.message;
       }
 
       toast.error(message);
