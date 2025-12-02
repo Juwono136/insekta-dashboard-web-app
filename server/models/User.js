@@ -11,7 +11,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "client"],
       default: "client",
     },
-    avatar: { type: String, default: "" },
+    avatar: {
+      type: String,
+      default: "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1764597116/user_bsdswt.png",
+    },
     companyName: { type: String, default: "" }, // Khusus client
     isActive: { type: Boolean, default: true },
     isFirstLogin: { type: Boolean, default: false },
@@ -24,13 +27,14 @@ const UserSchema = new mongoose.Schema(
 // Middleware: Enkripsi password sebelum save
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-// Method: Cek password saat login
+// Method Match Password (Opsional, biasanya sudah ada)
 UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

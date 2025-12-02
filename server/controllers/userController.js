@@ -93,8 +93,8 @@ export const createUserByAdmin = async (req, res) => {
       password: tempPassword,
       role: role || "client",
       companyName: companyName || "",
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name.replace(/\s/g, "")}`,
-      isFirstLogin: true, // <-- Tandai ini login pertama
+      avatar: "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1764597116/user_bsdswt.png",
+      isFirstLogin: true,
     });
 
     if (user) {
@@ -135,7 +135,6 @@ export const createUserByAdmin = async (req, res) => {
 // @desc    Update User Profile (Termasuk Ganti Pass & Upload Avatar)
 // @route   PUT /api/users/profile
 export const updateUserProfile = async (req, res) => {
-  let photoUrl = "";
   try {
     const user = await User.findById(req.user._id);
 

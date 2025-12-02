@@ -25,18 +25,26 @@ import BannerManagement from "./pages/admin/BannerManagement";
 import ClientLayout from "./pages/client/ClientLayout";
 import ChannelManagement from "./pages/admin/ChannelManagement";
 import KanalInsekta from "./pages/client/KanalInsekta";
+import ResetPassword from "./pages/ResetPassword";
 // import TrendHama from "./pages/client/TrendHama";
 
 function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
 
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* PUBLIC */}
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/" element={<Login />} />
 
           {/* --- ADMIN ROUTES --- */}

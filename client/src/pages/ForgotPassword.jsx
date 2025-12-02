@@ -21,7 +21,9 @@ const ForgotPassword = () => {
     setIsLoading(true);
     try {
       await authService.forgotPassword(email);
-      toast.success("Link reset password telah dikirim!");
+      toast.success("Link reset password telah dikirim! Silahkan cek email Anda.", {
+        duration: 5000,
+      });
       setEmail("");
     } catch (err) {
       toast.error(err.response?.data?.message || "Gagal mengirim email");

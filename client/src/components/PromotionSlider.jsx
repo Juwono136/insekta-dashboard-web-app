@@ -56,7 +56,7 @@ const PromotionSlider = () => {
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [isHovering, isDown, banners, selectedBanner]); // Dependency selectedBanner penting
+  }, [isHovering, isDown, banners, selectedBanner]);
 
   // 3. Drag Handlers
   const handleMouseDown = (e) => {
@@ -81,13 +81,11 @@ const PromotionSlider = () => {
     const x = e.pageX - sliderRef.current.offsetLeft;
     const walk = (x - startX) * 1.5;
     sliderRef.current.scrollLeft = scrollLeft - walk;
-    setDragDistance(Math.abs(walk)); // Hitung jarak geser
+    setDragDistance(Math.abs(walk));
   };
 
-  // 4. Handler Klik Smart (Hanya buka modal jika tidak sedang di-drag)
   const handleCardClick = (banner) => {
     if (dragDistance < 5) {
-      // Toleransi geser 5px dianggap klik
       setSelectedBanner(banner);
     }
   };
@@ -102,7 +100,7 @@ const PromotionSlider = () => {
         <div className="w-1.5 h-8 bg-blue-600 rounded-full"></div>
         <div>
           <h3 className="font-bold text-gray-800 text-xl leading-none">Info & Promo</h3>
-          <p className="text-xs text-gray-500 mt-1">Update terbaru spesial untuk Anda.</p>
+          <p className="text-xs text-gray-500 mt-1">Update terbaru tentang Insekta untuk Anda</p>
         </div>
       </div>
 

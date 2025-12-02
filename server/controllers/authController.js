@@ -123,22 +123,22 @@ export const forgotPassword = async (req, res) => {
     const resetToken = crypto.randomBytes(20).toString("hex");
 
     user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    // Rumus: 10 (menit) * 60 (detik) * 1000 (milidetik)
+    // Date.now() + 600000 ms
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
     await user.save();
 
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-    // Gunakan Template Modular
     const message = resetPasswordTemplate(resetUrl);
-
-    console.log("Reset URL (Copy ini untuk test):", resetUrl);
 
     try {
       await sendEmail({
         email: user.email,
-        subject: "Reset Password Token - Insekta",
-        message, // HTML Template
+        subject: "Reset Password Akun Insekta",
+        message,
       });
 
       res.status(200).json({ success: true, data: "Email reset password telah dikirim" });
@@ -146,7 +146,9 @@ export const forgotPassword = async (req, res) => {
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
-      return res.status(500).json({ message: "Email tidak bisa dikirim" });
+
+      console.error("Email send error:", error);
+      return res.status(500).json({ message: "Gagal mengirim email. Silakan coba lagi." });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -162,27 +164,27 @@ export const resetPassword = async (req, res) => {
       .update(req.params.resetToken)
       .digest("hex");
 
+    // Cari user berdasarkan token hash dan waktu expired
     const user = await User.findOne({
       resetPasswordToken,
-      resetPasswordExpire: { $gt: Date.now() }, // $gt = Greater Than (Waktu sekarang)
+      resetPasswordExpire: { $gt: Date.now() },
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Token tidak valid atau sudah kedaluwarsa" });
+      return res.status(400).json({ message: "Token tidak valid atau sudah kedaluwarsa." });
     }
 
-    user.password = req.body.password; // Akan di-hash otomatis oleh Model pre('save')
+    user.password = req.body.password;
 
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
-    res
-      .status(200)
-      .json({ success: true, message: "Password berhasil diperbarui. Silakan login." });
+    res.status(200).json({ success: true, message: "Password berhasil diperbarui." });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error Reset:", error);
+    res.status(500).json({ message: "Terjadi kesalahan server." });
   }
 };
 

@@ -42,7 +42,7 @@ const BannerDetailModal = ({ isOpen, onClose, banner }) => {
           <div className="absolute bottom-0 left-0 w-full p-6 text-white z-10">
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-white/20 backdrop-blur-md border border-white/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1.5">
-                {getBadgeIcon(banner.type)} {banner.type}
+                {getBadgeIcon(banner.type)} {banner.type === "warning" ? "PENTING" : banner.type}
               </span>
               <span className="flex items-center gap-1 text-[10px] opacity-80 font-medium">
                 <FiCalendar size={10} />{" "}

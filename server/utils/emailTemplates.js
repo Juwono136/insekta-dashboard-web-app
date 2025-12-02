@@ -2,7 +2,7 @@
 const styles = {
   container:
     "font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;",
-  header: "background-color: #0056b3; padding: 20px; text-align: center;",
+  header: "background-color: #093050; padding: 20px; text-align: center;",
   logo: "max-width: 200px; height: auto; display: block; margin: 0 auto;",
   content: "padding: 30px; background-color: #ffffff; color: #333333; line-height: 1.6;",
   button:
