@@ -46,7 +46,7 @@ const ClientAccessPanel = ({
   }, [allClients, searchClient]);
 
   return (
-    <div className="w-full lg:w-1/2 flex flex-col h-full bg-white">
+    <div className="w-full lg:w-1/2 flex flex-col min-h-80 overflow-auto bg-white">
       <div className="p-3 border-b border-gray-100 bg-white sticky top-0 z-10">
         <div className="relative">
           <FiSearch className="absolute z-10 left-3 top-2 text-gray-400" />
