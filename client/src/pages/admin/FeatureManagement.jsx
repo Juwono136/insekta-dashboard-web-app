@@ -23,7 +23,7 @@ const FeatureManagement = () => {
   const [filters, setFilters] = useState({
     search: "",
     company: "",
-    limit: 8,
+    limit: 9,
     page: 1,
   });
 
