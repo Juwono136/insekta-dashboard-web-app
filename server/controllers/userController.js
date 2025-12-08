@@ -93,7 +93,6 @@ export const createUserByAdmin = async (req, res) => {
       password: tempPassword,
       role: role || "client",
       companyName: companyName || "",
-      avatar: "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1764597116/user_bsdswt.png",
       isFirstLogin: true,
     });
 

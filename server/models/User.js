@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1764597116/user_bsdswt.png",
+      default: "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1765175906/profile_vs245w.png",
     },
     companyName: { type: String, default: "" }, // Khusus client
     isActive: { type: Boolean, default: true },

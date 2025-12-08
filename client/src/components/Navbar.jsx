@@ -136,15 +136,11 @@ const Navbar = ({ toggleSidebar, role }) => {
               className="btn btn-ghost btn-circle avatar placeholder ring-2 ring-transparent hover:ring-blue-200 transition-all"
             >
               <div className="w-10 h-10 rounded-full border-2 border-blue-800 bg-blue-800/10 text-blue-800 overflow-hidden">
-                {userInfo?.avatar ? (
-                  <img
-                    alt="Profile"
-                    src={getImageUrl(userInfo.avatar)}
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <span className="text-lg font-bold">{userInfo?.name?.charAt(0)}</span>
-                )}
+                <img
+                  alt="Profile"
+                  src={getImageUrl(userInfo.avatar) || userInfo.avatar}
+                  className="object-cover w-full h-full"
+                />
               </div>
             </div>
 

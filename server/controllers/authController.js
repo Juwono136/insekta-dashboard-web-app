@@ -81,14 +81,11 @@ export const registerUser = async (req, res) => {
       return res.status(409).json({ message: "User dengan email ini sudah ada" });
     }
 
-    const avatar = "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1764597116/user_bsdswt.png";
-
     const user = await User.create({
       name,
       email,
       password,
       role: role || "client",
-      avatar,
     });
 
     if (user) {
