@@ -63,6 +63,23 @@ Aplikasi ini memfasilitasi komunikasi data antara Admin (PT Insekta Fokustama) d
 - Login dengan role-based authentication.
 - Forgot password dan reset password.
 
+## Setup Aplikasi
+- buat file .env di dalam folder `server`:
+```bash
+PORT=5000
+MONGO_URI=YOUR_MONGODB_URI
+JWT_SECRET=YOUR_JWT_SECRET
+EMAIL_USER=YOUR_USER_EMAIL
+EMAIL_PASS=OUR_APP_PASSWORD_EMAIL
+CLIENT_URL=YOUR_CLIENT_URL
+
+CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_NAME
+CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
+
+NODE_ENV=development
+```
+
 ## Screenshot Web App
 ### Halaman Login
 <img width="1915" height="867" alt="image" src="https://github.com/user-attachments/assets/f5109c82-8d29-4b4e-a816-91cc119eefc9" />
