@@ -1,7 +1,7 @@
 export const getImageUrl = (path) => {
-  if (!path) return "";
+  // if (!path) return "";
 
-  if (!path) {
+  if (!path || path === "") {
     return "https://res.cloudinary.com/dz8dtz5ki/image/upload/v1765175906/profile_vs245w.png";
   }
 
